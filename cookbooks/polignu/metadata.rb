@@ -1,9 +1,9 @@
-name 'polignu'
-maintainer 'The Authors'
-maintainer_email 'you@example.com'
-license 'all_rights'
-description 'Installs/Configures polignu'
-long_description 'Installs/Configures polignu'
+name 'PoliGNU Web Env'
+maintainer 'PoliGNU Team - Diego Rabatone Oliveira & Leonardo Alexandre Ferreira Leite'
+maintainer_email 'poli@gnu.org'
+license 'gpl_v3'
+description 'Installs/Configures polignu and poligen web sites environment'
+long_description 'Installs/Configures polignu and poligen websites environment.'
 version '0.1.0'
 
 # If you upload to Supermarket you should set this so your cookbook
