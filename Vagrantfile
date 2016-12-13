@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "ubuntu/xenial64"
+        config.vm.box = "bento/ubuntu-16.04"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -73,11 +73,11 @@ Vagrant.configure("2") do |config|
   #
 
   config.vm.provision "chef_solo" do |chef|
-    chef.installer_download_path = 'https://www.opscode.com/chef/install.sh'
-    chef.version = '12.10.24'
-    chef.arguments = "-c /polignu/solo.rb"
-    chef.json = { "run_list" => [ "recipe[polignu::default]" ]  }
-    chef.cookbooks_path = [ '/polignu/cookbooks' ]
-    chef.add_recipe "polignu"
+    # chef.installer_download_path = 'https://www.opscode.com/chef/install.sh'
+     chef.version = '12.17.44'
+    # chef.arguments = "-c /polignu/solo.rb"
+    # chef.json = { "run_list" => [ "recipe[polignu::default]" ]  }
+   # chef.cookbooks_path = [ '/polignu/cookbooks' ]
+    chef.add_recipe "polignu::default"
   end
 end
