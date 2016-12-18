@@ -1,4 +1,4 @@
-name 'PoliGNU Web Env'
+name 'polignu'
 maintainer 'PoliGNU Team - Diego Rabatone Oliveira & Leonardo Alexandre Ferreira Leite'
 maintainer_email 'poli@gnu.org'
 license 'gpl_v3'
