@@ -73,11 +73,9 @@ Vagrant.configure("2") do |config|
   #
 
   config.vm.provision "chef_solo" do |chef|
-    # chef.installer_download_path = 'https://www.opscode.com/chef/install.sh'
-     chef.version = '12.17.44'
+    chef.version = '12.17.44'
     # chef.arguments = "-c /polignu/solo.rb"
     # chef.json = { "run_list" => [ "recipe[polignu::default]" ]  }
-   # chef.cookbooks_path = [ '/polignu/cookbooks' ]
     chef.add_recipe "polignu::default"
   end
 end
