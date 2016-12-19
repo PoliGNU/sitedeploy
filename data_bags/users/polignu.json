@@ -1,0 +1,13 @@
+{
+  "id": "polignu",
+  "password": "$1$Vyt/NNQX$UK3Fngm8a5HKNlfffKOSx.",
+  "ssh_keys": [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGLiW95QE2rINsV6TdWQprv9jRGj5ZTbahtyJYJ4JMgm/LK1ETsCJpXcw9FmTmzFHXj76rho8B/fHhU3lUgF3mZVc2M4OXwbFRSgZj3Yd7AYFwB4EhX6/5oqguySVipIUC0a6vc6LEuLksNe72yRJKd57XIlePg6v0g/YELMo+VYiMF3Y71/DW+Y7XZpsL7+7cx4lyYgJwL+w6pBkkCEC6A0B7yx1QQYpxVZoMsmqEQSqJe+fcMtu8kJzem4QtcOj+N/OJ/yl3dNuILDUG1Dj4IsJTQt516TWzmhN905F2x84CHdlzqtmzT/1rVFqdjY13k0mx3uFSpVmZF9ww8dRf diraol@diraol.eng.br - GandhiSSD"
+  ],
+  "groups": [
+    "sudo",
+    "sysadmin",
+    "www-data"
+  ],
+  "shell": "/bin/bash"
+}

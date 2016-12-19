@@ -1,0 +1,21 @@
+{
+  "authorization": {
+    "sudo": {
+      "groups": ["vagrant", "polignu", "wheel", "sysadmin"],
+      "users": ["vagrant", "polignu"],
+      "passwordless": "false"
+    }
+  },
+  "users": ["polignu"],
+  "nginx": {
+    "default_site_enabled": false,
+    "source": { "modules": [ "nginx::http_gzip_static_module" ] }
+  },
+  "mariadb": {
+    "password": {
+      "root": "password_basico_inicial",
+      "polignu": "password_basico_inicial",
+      "poligen": "password_basico_inicial"
+    }
+  }
+}
