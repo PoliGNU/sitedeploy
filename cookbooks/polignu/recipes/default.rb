@@ -30,9 +30,12 @@ package 'hhvm' do
   action :install
 end
 
-# Install Varnish
-
 # Install MariaDB
+package "mariadb-server" do
+  action :install
+end
+
+# Install Varnish
 
 # Install letsencrypt (certbot)
 
