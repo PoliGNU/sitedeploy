@@ -2,18 +2,15 @@
 # Cookbook Name:: polignu
 # Recipe:: default
 #
-# Copyright (c) 2016 The Authors, All Rights Reserved.
-#
+
+# Referência para criação da receita: https://docs.chef.io/resources.html
 
 # Install nginx
-package "nginx" do
-  action :install
-end
+
+package "nginx" 
 
 # Install HHVM
-package 'software-properties-common' do
-  action :install
-end
+package 'software-properties-common' 
 
 apt_repository "hhvm" do
   uri           "http://dl.hhvm.com/ubuntu"
@@ -22,18 +19,12 @@ apt_repository "hhvm" do
   key           '0x5a16e7281be7a449'
 end
 
-execute "apt-get-update" do
-    command "apt-get update"
-end
+execute "apt-get update" 
 
-package 'hhvm' do
-  action :install
-end
+package 'hhvm' 
 
 # Install MariaDB
-package "mariadb-server" do
-  action :install
-end
+package "mariadb-server" 
 
 # Install Varnish
 
@@ -48,3 +39,4 @@ end
 # Setup letsencrypt
 
 # Setup Drupal (polignu/poligen)
+
