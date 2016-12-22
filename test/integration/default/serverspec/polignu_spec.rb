@@ -1,14 +1,41 @@
 require 'serverspec'
 
-# Referência para criação dos testes: http://serverspec.org/
+# Ref for test creation: http://serverspec.org/
 
 set :backend, :exec
 
-describe service('nginx') do
-	  it { should be_enabled }
-	  it { should be_running }
+describe service('mysql') do
+  it { should be_enabled }
+  it { should be_running }
 end
 
-describe port(80) do
-	  it { should be_listening }
+describe service('nginx') do
+  it { should be_enabled }
+  it { should be_running }
 end
+
+describe service('hhvm') do
+  #it { should be_enabled }
+  it { should be_running }
+end
+
+# describe service('varnish') do
+#   it { should be_enabled }
+#   it { should be_running }
+# end
+
+# Nginx http
+describe port(80) do
+    it { should be_listening  }
+end
+
+# Nginx https
+# describe port(443) do
+#     it { should be_listening  }
+# end
+#
+# Varnish
+# describe port(8180) do
+#     it { should be_listening  }
+# end
+
