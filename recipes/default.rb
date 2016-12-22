@@ -7,10 +7,10 @@
 
 # Install nginx
 
-package "nginx" 
+package "nginx"
 
 # Install HHVM
-package 'software-properties-common' 
+package 'software-properties-common'
 
 apt_repository "hhvm" do
   uri           "http://dl.hhvm.com/ubuntu"
@@ -19,12 +19,15 @@ apt_repository "hhvm" do
   key           '0x5a16e7281be7a449'
 end
 
-execute "apt-get update" 
+execute "apt-get update"
 
-package 'hhvm' 
+package 'hhvm'
+service "hhvm" do
+    action :start
+end
 
 # Install MariaDB
-package "mariadb-server" 
+package "mariadb-server"
 
 # Install Varnish
 
