@@ -5,9 +5,60 @@
 
 # Referência para criação da receita: https://docs.chef.io/resources.html
 
+user = 'vagrant' # TODO get from node properties
+home = "/home/#{user}"
+polignu_folder = "#{home}/polignu"
+
+directory "#{polignu_folder}" do
+  owner user
+  group user
+  mode '755'
+  action :create
+end
+
 # Install nginx
 
 package "nginx"
+
+ssl_folder = "/etc/nginx/ssl" 
+
+directory "#{ssl_folder}" do
+  mode '755'
+  action :create
+end
+
+cookbook_file "#{ssl_folder}/nginx.crt" do
+  mode '644'
+  source 'nginx.crt'
+end
+
+cookbook_file "#{ssl_folder}/nginx.key" do
+  mode '644'
+  source 'nginx.key'
+end
+
+template "#{polignu_folder}/radar_nginx.conf" do
+  mode '644'
+  owner user
+  group user
+  source "polignu_nginx.conf.erb"
+  variables({
+    :server_name => 'localhost', # TODO get from node properties
+  })
+end
+
+link "/etc/nginx/sites-enabled/polignu_nginx.conf" do
+  to "#{polignu_folder}/radar_nginx.conf"
+end
+
+#file "/etc/nginx/sites-enabled/default" do
+#  action :delete
+#end
+
+service "nginx" do
+  action :restart
+end
+
 
 # Install HHVM
 package 'software-properties-common'
