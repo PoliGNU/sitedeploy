@@ -8,8 +8,8 @@
 
 server {
     listen 443 ssl;
-    server_name    <%= @server_name %>;
-    root /var/www/html;
+    server_name <%= @server_name %>;
+    root <%= @root_folder %>;
     ssl_certificate /etc/nginx/ssl/nginx.crt;
     ssl_certificate_key /etc/nginx/ssl/nginx.key;
     location / {

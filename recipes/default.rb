@@ -20,6 +20,18 @@ end
 
 package "nginx"
 
+root_folder = "#{polignu_folder}/www"
+
+directory "#{root_folder}" do
+  mode '755'
+  action :create
+end
+
+cookbook_file "#{root_folder}/index.html" do
+  mode '644'
+  source 'index.html'
+end
+
 ssl_folder = "/etc/nginx/ssl" 
 
 directory "#{ssl_folder}" do
@@ -44,6 +56,7 @@ template "#{polignu_folder}/radar_nginx.conf" do
   source "polignu_nginx.conf.erb"
   variables({
     :server_name => 'localhost', # TODO get from node properties
+    :root_folder => root_folder
   })
 end
 
