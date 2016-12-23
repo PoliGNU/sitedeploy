@@ -56,6 +56,7 @@ template "#{polignu_folder}/radar_nginx.conf" do
   source "polignu_nginx.conf.erb"
   variables({
     :server_name => 'localhost', # TODO get from node properties
+    :ssl_port_from_internet => '8443', # TODO get from node properties
     :root_folder => root_folder
   })
 end
@@ -64,9 +65,9 @@ link "/etc/nginx/sites-enabled/polignu_nginx.conf" do
   to "#{polignu_folder}/radar_nginx.conf"
 end
 
-#file "/etc/nginx/sites-enabled/default" do
-#  action :delete
-#end
+file "/etc/nginx/sites-enabled/default" do
+  action :delete
+end
 
 service "nginx" do
   action :restart
