@@ -16,6 +16,8 @@ directory "#{polignu_folder}" do
   action :create
 end
 
+execute "apt-get update"
+
 # Install nginx
 
 package "nginx"
@@ -49,20 +51,20 @@ cookbook_file "#{ssl_folder}/nginx.key" do
   source 'nginx.key'
 end
 
-template "#{polignu_folder}/radar_nginx.conf" do
+template "#{polignu_folder}/nginx.conf" do
   mode '644'
   owner user
   group user
-  source "polignu_nginx.conf.erb"
+  source "nginx.conf.erb"
   variables({
-    :server_name => 'localhost', # TODO get from node properties
+    :server_name => node['server_name'],
     :ssl_port_from_internet => '8443', # TODO get from node properties
     :root_folder => root_folder
   })
 end
 
-link "/etc/nginx/sites-enabled/polignu_nginx.conf" do
-  to "#{polignu_folder}/radar_nginx.conf"
+link "/etc/nginx/sites-enabled/polignu.conf" do
+  to "#{polignu_folder}/nginx.conf"
 end
 
 file "/etc/nginx/sites-enabled/default" do
@@ -75,6 +77,7 @@ end
 
 
 # Install HHVM
+
 package 'software-properties-common'
 
 apt_repository "hhvm" do
@@ -84,14 +87,13 @@ apt_repository "hhvm" do
   key           '0x5a16e7281be7a449'
 end
 
-execute "apt-get update"
-
 package 'hhvm'
 service "hhvm" do
     action :start
 end
 
 # Install MariaDB
+
 package "mariadb-server"
 
 # Install Varnish

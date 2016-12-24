@@ -1,4 +1,5 @@
 {
+  "server_name" : "<PUT PUBLIC IP OR HOSTNAME HERE>",
   "authorization": {
     "sudo": {
       "groups": ["vagrant", "polignu", "wheel", "sysadmin"],

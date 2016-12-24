@@ -16,5 +16,7 @@ suites:
   - name: default
     run_list:
       - recipe[polignu::default]
-    attributes:
-
+    attributes: {
+        server_name : "localhost"
+    }
+    
