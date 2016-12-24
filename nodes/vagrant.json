@@ -1,5 +1,6 @@
 {
-  "server_name" : "<PUT PUBLIC IP OR HOSTNAME HERE>",
+  "linux_user" : "<LINUX USER WE USE TO SSH>",
+  "server_name" : "<PUBLIC IP OR HOSTNAME HERE>",
   "authorization": {
     "sudo": {
       "groups": ["vagrant", "polignu", "wheel", "sysadmin"],
@@ -7,7 +8,7 @@
       "passwordless": "false"
     }
   },
-  "users": ["polignu"],
+  "users": ["polignu"], 
   "nginx": {
     "default_site_enabled": false,
     "source": { "modules": [ "nginx::http_gzip_static_module" ] }

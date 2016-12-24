@@ -5,7 +5,7 @@
 
 # Referência para criação da receita: https://docs.chef.io/resources.html
 
-user = 'vagrant' # TODO get from node properties
+user = node['linux_user']
 home = "/home/#{user}"
 polignu_folder = "#{home}/polignu"
 
