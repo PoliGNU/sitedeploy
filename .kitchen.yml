@@ -17,6 +17,7 @@ suites:
     run_list:
       - recipe[polignu::default]
     attributes: {
-        server_name : "localhost"
+        server_name : "localhost",
+        ssl_public_port : "8443"
     }
     

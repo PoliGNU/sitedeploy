@@ -51,6 +51,12 @@ cookbook_file "#{ssl_folder}/nginx.key" do
   source 'nginx.key'
 end
 
+DEFAULT_SSL_PUBLIC_PORT = 443
+ssl_public_port = node['ssl_public_port']
+if ssl_public_port.nil?
+  ssl_public_port = DEFAULT_SSL_PUBLIC_PORT
+end
+
 template "#{polignu_folder}/nginx.conf" do
   mode '644'
   owner user
@@ -58,7 +64,7 @@ template "#{polignu_folder}/nginx.conf" do
   source "nginx.conf.erb"
   variables({
     :server_name => node['server_name'],
-    :ssl_port_from_internet => '8443', # TODO get from node properties
+    :ssl_port_from_internet => ssl_public_port,
     :root_folder => root_folder
   })
 end
