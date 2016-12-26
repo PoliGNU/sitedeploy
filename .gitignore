@@ -20,4 +20,8 @@ Berksfile.lock
 .zero-knife.rb
 Policyfile.lock.json
 
+# Tests suits
+.yardoc/
+doc/
+
 *.log
