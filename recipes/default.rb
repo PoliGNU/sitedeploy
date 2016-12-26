@@ -93,6 +93,9 @@ apt_repository "hhvm" do
   key           '0x5a16e7281be7a449'
 end
 
+# Updating apt after adding a new apt repository
+execute "apt-get update"
+
 package 'hhvm'
 service "hhvm" do
     action :start
