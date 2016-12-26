@@ -9,7 +9,7 @@ user = node['linux_user']
 home = "/home/#{user}"
 polignu_folder = "#{home}/polignu"
 
-directory "#{polignu_folder}" do
+directory polignu_folder do
   owner user
   group user
   mode '755'
@@ -24,7 +24,7 @@ package "nginx"
 
 root_folder = "#{polignu_folder}/www"
 
-directory "#{root_folder}" do
+directory root_folder do
   mode '755'
   action :create
 end
@@ -36,7 +36,7 @@ end
 
 ssl_folder = "/etc/nginx/ssl" 
 
-directory "#{ssl_folder}" do
+directory ssl_folder do
   mode '755'
   action :create
 end
