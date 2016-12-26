@@ -57,11 +57,11 @@ if ssl_public_port.nil?
   ssl_public_port = DEFAULT_SSL_PUBLIC_PORT
 end
 
-template "#{polignu_folder}/nginx.conf" do
+template "#{polignu_folder}/nginx_polignu.conf" do
   mode '644'
   owner user
   group user
-  source "nginx.conf.erb"
+  source "nginx_site.conf.erb"
   variables({
     :server_name => node['server_name'],
     :ssl_public_port => ssl_public_port,
@@ -70,7 +70,7 @@ template "#{polignu_folder}/nginx.conf" do
 end
 
 link "/etc/nginx/sites-enabled/polignu.conf" do
-  to "#{polignu_folder}/nginx.conf"
+  to "#{polignu_folder}/nginx_polignu.conf"
 end
 
 file "/etc/nginx/sites-enabled/default" do
