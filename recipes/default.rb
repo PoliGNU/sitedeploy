@@ -31,7 +31,7 @@ end
 
 cookbook_file "#{root_folder}/index.html" do
   mode '644'
-  source 'index.html'
+  source 'test.html'
 end
 
 ssl_folder = "/etc/nginx/ssl" 
@@ -64,7 +64,7 @@ template "#{polignu_folder}/nginx.conf" do
   source "nginx.conf.erb"
   variables({
     :server_name => node['server_name'],
-    :ssl_port_from_internet => ssl_public_port,
+    :ssl_public_port => ssl_public_port,
     :root_folder => root_folder
   })
 end
