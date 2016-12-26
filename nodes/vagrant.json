@@ -1,6 +1,6 @@
 {
-  "linux_user" : "<LINUX USER WE USE TO SSH>",
-  "server_name" : "<PUBLIC IP OR HOSTNAME HERE>",
+  "linux_user" : "vagrant",
+  "server_name" : "localhost",
   "authorization": {
     "sudo": {
       "groups": ["vagrant", "polignu", "wheel", "sysadmin"],

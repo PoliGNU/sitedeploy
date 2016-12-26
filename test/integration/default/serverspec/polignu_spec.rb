@@ -12,17 +12,17 @@ describe service('nginx') do
 end
 
 describe port(80) do
-    it { should be_listening  }
+  it { should be_listening  }
 end
 
 describe port(443) do
-    it { should be_listening  }
+  it { should be_listening  }
 end
 
 # HHVM
 
 describe service('hhvm') do
-  #it { should be_enabled }
+  # it { should be_enabled }
   it { should be_running }
 end
 
@@ -31,10 +31,8 @@ end
 #   it { should be_running }
 # end
 
-
 #
 # Varnish
 # describe port(8180) do
 #     it { should be_listening  }
 # end
-
