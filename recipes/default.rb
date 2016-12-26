@@ -8,7 +8,7 @@
 # Reference for creating a recepie: https://docs.chef.io/resources.html
 
 user = node['linux_user']
-polignu_folder = '/home/#{user}/polignu'
+polignu_folder = "/home/#{user}/polignu"
 
 directory polignu_folder do
   owner user
@@ -23,14 +23,14 @@ execute 'apt-get update'
 
 package 'nginx'
 
-root_folder = '#{polignu_folder}/www'
+root_folder = "#{polignu_folder}/www"
 
 directory root_folder do
   mode '755'
   action :create
 end
 
-cookbook_file '#{root_folder}/index.html' do
+cookbook_file "#{root_folder}/index.html" do
   mode '644'
   source 'test.html'
 end
@@ -42,12 +42,12 @@ directory ssl_folder do
   action :create
 end
 
-cookbook_file '#{ssl_folder}/nginx.crt' do
+cookbook_file "#{ssl_folder}/nginx.crt" do
   mode '644'
   source 'nginx.crt'
 end
 
-cookbook_file '#{ssl_folder}/nginx.key' do
+cookbook_file "#{ssl_folder}/nginx.key" do
   mode '644'
   source 'nginx.key'
 end
@@ -57,7 +57,7 @@ ssl_public_port = node['ssl_public_port']
 
 ssl_public_port = DEFAULT_SSL_PUBLIC_PORT if ssl_public_port.nil?
 
-template '#{polignu_folder}/nginx_polignu.conf' do
+template "#{polignu_folder}/nginx_polignu.conf" do
   mode '644'
   owner user
   group user
@@ -70,7 +70,7 @@ template '#{polignu_folder}/nginx_polignu.conf' do
 end
 
 link '/etc/nginx/sites-enabled/polignu.conf' do
-  to '#{polignu_folder}/nginx_polignu.conf'
+  to "#{polignu_folder}/nginx_polignu.conf"
 end
 
 file '/etc/nginx/sites-enabled/default' do

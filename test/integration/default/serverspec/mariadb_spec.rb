@@ -8,7 +8,7 @@ require 'socket'
 
 mysql_name = 'mysql'
 mysql_config_file = '/etc/mysql/my.cnf'
-mysql_server_packages = %w{(mariadb-server)}
+mysql_server_packages = %w{mariadb-server}
 # collectd_plugin_dir = '/etc/collectd/plugins'
 
 describe 'MySQL server packages are installed' do
