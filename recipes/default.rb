@@ -8,8 +8,7 @@
 # Reference for creating a recepie: https://docs.chef.io/resources.html
 
 user = node['linux_user']
-home = '/home/#{user}'
-polignu_folder = '#{home}/polignu'
+polignu_folder = '/home/#{user}/polignu'
 
 directory polignu_folder do
   owner user
@@ -63,11 +62,11 @@ template '#{polignu_folder}/nginx_polignu.conf' do
   owner user
   group user
   source 'nginx_site.conf.erb'
-  variables({
-              server_name: node['server_name'],
-              ssl_public_port: ssl_public_port,
-              root_folder: root_folder
-            })
+  variables(
+    server_name: node['server_name'],
+    ssl_public_port: ssl_public_port,
+    root_folder: root_folder
+  )
 end
 
 link '/etc/nginx/sites-enabled/polignu.conf' do
