@@ -13,8 +13,9 @@ The following steps are based on:
 https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-16-04
 
 ### Pre-requisite softwares:
-First install [VirtualBox](http://virtualbox.org) and
-[Vagrant](http://vagrantup.com).
+First install [VirtualBox](http://virtualbox.org),
+[Vagrant](http://vagrantup.com),
+[Bats](https://github.com/sstephenson/bats) and curl.
 
 ### Update and install dependencies
 
