@@ -2,55 +2,40 @@
 
 ## Development Environment Setup
 
-Firstly it is necessary to install Chef Kitchen tool and its dependencies. For
-that, we are going to use the `bundler` tool [so we can manage our dependencies
-with the Gemfile].
-
-To make everybody lifes easier, we recommend you to use the `rbenv` tool to
-install Ruby, Ruby Gems and all other ruby based tools.
-
-The following steps are based on:
-https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-16-04
-
 ### Pre-requisite softwares:
+
 First install [VirtualBox](http://virtualbox.org),
 [Vagrant](http://vagrantup.com),
 [Bats](https://github.com/sstephenson/bats) and curl.
 
-### Update and install dependencies
+To install Bats (shell script testing tool):
 
-Let’s install the dependencies required for rbenv and Ruby with `apt-get`:
+```shell
+$ git clone https://github.com/sstephenson/bats.git
+$ cd bats
+$ ./install.sh /usr/local
+$ cd ..; rm -rf bats
+```
+
+### Ruby setup
+
+Install `rbenv`, a tool to manage the installed Ruby versions.
+
+A way to install rbenv (based on https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-16-04):
 
 ```shell
 $ sudo apt update
 $ sudo apt install autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm3 libgdbm-dev
-```
-
-Once we have all of the required system dependencies installed, we can move
-onto the installation of rbenv itself.
-
-### Install rbenv
-
-Now we are ready to install rbenv. Let's clone the rbenv repository from git.
-You should complete these steps from the user account from which you plan to
-run Ruby.
-
-```shell
 $ git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 ```
 
-From here, you should add `~/.rbenv/bin` to your `$PATH` so that you can use
-rbenv's command line utility. Also adding `~/.rbenv/bin/rbenv` init to your
-`~/.bash_profile` will let you load rbenv automatically.
+But you can install in other ways. In Arch it's possible to use the AUR package.
+
+After installing rbenv:
 
 ```shell
 $ echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 $ echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-```
-
-Next, source rbenv by typing:
-
-```shell
 $ source ~/.bashrc
 ```
 
@@ -91,32 +76,16 @@ plugin for rbenv through git:
 $ git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 ```
 
-At this point, you should have both rbenv and ruby-build installed, and we can
-move on to installing Ruby.
+In Arch Linux, it's possible to install ruby-build using the AUR package.
 
-### Install Ruby
-With the ruby-build rbenv plugin now installed, we can install whatever
-versions of Ruby that we may need through a simple command. First, let's list
-all the available versions of Ruby:
-
-```shell
-$ rbenv install -l
-```
-
-The output of that command should be a long list of versions that you can
-choose to install.
-
-We'll now install a particular version of Ruby. It's important to keep in mind
-that installing Ruby can be a lengthy process, so be prepared for the
-installation to take some time to complete.
-
-As an example here, let's install Ruby version `2.3.3`, and once it's done
-installing, we can set it as our default version with the *global* sub-command:
+Now, let's install Ruby:
 
 ```shell
 $ rbenv install 2.3.3
 $ rbenv global 2.3.3
 ```
+
+The *global* command sets the default Ruby version in the system.
 
 Verify that Ruby was properly installed by checking your version number:
 
@@ -124,33 +93,19 @@ Verify that Ruby was properly installed by checking your version number:
 $ ruby -v
 ```
 
-If you installed version `2.3.3` of Ruby, your output to the above command
-should look something like this:
-
-    Output
-    ruby 2.3.3p222 (2016-11-21 revision 56859) [x86_64-linux]
-
-You now have at least one version of Ruby installed and have set your default
-Ruby version.
-
 ### Working with Gems
 
-Gems are packages that extend the functionality of Ruby. We will want to
-install Rails through the `gem` command.
+Gems are packages that extend the functionality of Ruby.
 
-So that the process of installing Rails is less lengthy, we will turn off local
-documentation for each gem we install. We will also install the bundler gem to
-manage application dependencies:
+We declares the gems we are going to use in the Gemfile. To be able to use the Gemfile, we need the Bundler gem.
+Bundler manages application dependencies.
 
 ```shell
-$ echo "gem: --no-document" >> ~/.gemrc
 $ gem install bundler
 ```
 
 You can use the `gem env` command (the subcommand env is short for
 `environment`) to learn more about the environment and configuration of gems.
-
-### Installing `sitedeploy` dependencies
 
 Being on the root folder of this repository, run the following command to
 install our ruby-based dependencies:
