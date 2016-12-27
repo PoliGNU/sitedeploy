@@ -7,18 +7,12 @@
 #
 # $ rake -T
 # rake clean                    # Clean some generated files
-# rake default                  # Run doc, style, unit and integration tests
-# rake doc                      # Generate Ruby documentation
-# rake integration[regexp,action]          # Run Test Kitchen integration tests
-# rake integration:cloud[regexp,action]    # Run Kitchen tests in the cloud
-# rake integration:docker[regexp,action]   # Run Kitchen tests using docker
-# rake integration:vagrant[regexp,action]  # Run Kitchen tests using vagrant
+# rake default                  # Run style and integration tests
+# rake integration[regexp,action]          # Run Kitchen integration tests using Vagrant on local machine and Docker on CI Server
 # rake style                    # Run all style checks
 # rake style:chef               # Run Chef style checks using foodcritic
 # rake style:ruby               # Run Ruby style checks using rubocop
 # rake style:ruby:auto_correct  # Auto-correct RuboCop offenses
-# rake unit                     # Run ChefSpec unit tests
-# rake yard                     # Generate Ruby documentation using yard
 #
 # More info at https://github.com/ruby/rake/blob/master/doc/rakefile.rdoc
 #
@@ -48,17 +42,6 @@ task :clean do
   ).each { |f| FileUtils.rm_rf(Dir.glob(f)) }
 end
 
-desc 'Generate Ruby documentation using yard'
-task :yard do
-  require 'yard'
-  YARD::Rake::YardocTask.new do |t|
-    t.stats_options = %w(--list-undoc)
-  end
-end
-
-desc 'Generate Ruby documentation'
-task doc: %w(yard)
-
 namespace :style do
   require 'rubocop/rake_task'
   desc 'Run Ruby style checks using rubocop'
@@ -72,16 +55,7 @@ end
 desc 'Run all style checks'
 task style: %w(style:chef style:ruby)
 
-desc 'Run ChefSpec unit tests'
-task :unit do
-  require 'rspec/core/rake_task'
-  RSpec::Core::RakeTask.new(:unit) do |t|
-    t.rspec_opts = '--color --format progress'
-    t.pattern = 'test/unit/**{,/*/**}/*_spec.rb'
-  end
-end
-
-desc 'Run Test Kitchen integration tests'
+desc 'Run Kitchen integration tests'
 namespace :integration do
   # Gets a collection of instances.
   #
@@ -108,25 +82,20 @@ namespace :integration do
     kitchen_instances(regexp, config).each { |i| i.send(action) }
   end
 
-  desc 'Run Test Kitchen integration tests using vagrant'
+  desc 'Run Kitchen integration tests using vagrant'
   task :vagrant, [:regexp, :action] do |_t, args|
     run_kitchen(args.action, args.regexp)
   end
 
-  desc 'Run Test Kitchen integration tests using docker'
+  desc 'Run Kitchen integration tests using docker'
   task :docker, [:regexp, :action] do |_t, args|
     run_kitchen(args.action, args.regexp, local_config: '.kitchen.docker.yml')
   end
-
-  desc 'Run Test Kitchen integration tests in the cloud'
-  task :cloud, [:regexp, :action] do |_t, args|
-    run_kitchen(args.action, args.regexp, local_config: '.kitchen.cloud.yml')
-  end
 end
 
-desc 'Run Test Kitchen integration tests'
+desc 'Run Kitchen integration tests (Vagrant on local machine and Docker on CI Server)'
 task :integration, [:regexp, :action] =>
   ci? ? %w(integration:docker) : %w(integration:vagrant)
 
-desc 'Run doc, style, unit and integration tests'
-task default: %w(doc style unit integration)
+desc 'Run style and integration tests'
+task default: %w(style integration)
