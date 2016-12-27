@@ -88,3 +88,11 @@ task :integration, [:action] =>
 
 desc 'Run style and integration tests'
 task default: %w(style integration)
+
+desc 'Run smoke tests with Bats'
+task :smoke do 
+  run_kitchen('converge')
+  puts `bats test/smoke`
+  run_kitchen('destroy')
+end
+
