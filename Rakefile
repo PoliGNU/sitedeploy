@@ -4,15 +4,7 @@
 
 #
 # Available Rake tasks:
-#
 # $ rake -T
-# rake clean                    # Clean some generated files
-# rake default                  # Run style and integration tests
-# rake integration[regexp,action]          # Run Kitchen integration tests using Vagrant on local machine and Docker on CI Server
-# rake style                    # Run all style checks
-# rake style:chef               # Run Chef style checks using foodcritic
-# rake style:ruby               # Run Ruby style checks using rubocop
-# rake style:ruby:auto_correct  # Auto-correct RuboCop offenses
 #
 # More info at https://github.com/ruby/rake/blob/master/doc/rakefile.rdoc
 #
