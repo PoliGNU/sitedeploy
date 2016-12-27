@@ -1,8 +1,22 @@
 # PoliGNU and PoliGEN Webserver deploy
 
+PoliGNU and PoliGen are websites run in Drupal.
+
+This cookbook aims to deploy them in an automated way.
+
+Here is our infrastructure architecture:
+
+![Infrastructure architecture](https://raw.github.com/PoliGNU/sitedeploy/master/infra.png)
+
 ## Daily usage (after initial setup)
 
 The main development functions are in the Rakefile. To check the options: `rake -T`.
+
+Before commiting, remember to run the validations and tests:
+
+    rake style
+    rake integration[verify]
+    rake smoke
 
 ## Development Environment Setup
 
