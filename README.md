@@ -1,5 +1,9 @@
 # PoliGNU and PoliGEN Webserver deploy
 
+## Daily usage (after initial setup)
+
+The main development functions are in the Rakefile. To check the options: `rake -T`.
+
 ## Development Environment Setup
 
 ### Pre-requisite softwares:
@@ -114,9 +118,12 @@ install our ruby-based dependencies:
 $ bundle install
 ```
 
-## Testing (with kitchen)
+## Understanding testing with kitchen
 
-To run the test suit, you should run the following command:
+The usage of Kitchen is encapsulated in our Rakefile. 
+But to better understand Kitchen, here goes some further explanation.
+
+To run the test suit:
 
 ```kitchen test```
 
@@ -151,3 +158,4 @@ The states of a kitchen created VM can be:
 To verify the VM status, run:
 
 ```kitchen list```
+
