@@ -92,7 +92,10 @@ task default: %w(style integration)
 desc 'Run smoke tests with Bats'
 task :smoke do 
   run_kitchen('converge')
-  puts `bats test/smoke`
-  run_kitchen('destroy')
+  if system "bats test/smoke"
+    run_kitchen('destroy')
+  else
+    return $?.exitstatus	  
+  end
 end
 
