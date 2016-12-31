@@ -22,6 +22,5 @@ Policyfile.lock.json
 
 # Tests suits
 .yardoc/
-doc/
 
 *.log
