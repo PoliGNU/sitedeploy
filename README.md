@@ -6,7 +6,7 @@ This cookbook aims to deploy them in an automated way.
 
 Here is our infrastructure architecture:
 
-![Infrastructure architecture](https://raw.github.com/PoliGNU/sitedeploy/master/infra.png)
+![Infrastructure architecture](https://raw.github.com/PoliGNU/sitedeploy/master/doc/infra.png)
 
 ## Daily usage (after initial setup)
 

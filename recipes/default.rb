@@ -19,6 +19,7 @@ end
 
 execute 'apt-get update'
 
+###############
 # Install nginx
 
 package 'nginx'
@@ -81,6 +82,7 @@ service 'nginx' do
   action :restart
 end
 
+##############
 # Install HHVM
 
 package 'software-properties-common'
@@ -100,20 +102,19 @@ service 'hhvm' do
   action :start
 end
 
+#################
 # Install MariaDB
 
 package 'mariadb-server'
 
+#################
 # Install Varnish
 
+package 'varnish'
+
+###############################
 # Install letsencrypt (certbot)
 
-# Setup nginx
-
-# Setup hhvm
-
-# Setup varnish
-
-# Setup letsencrypt
-
+###############################
 # Setup Drupal (polignu/poligen)
+
