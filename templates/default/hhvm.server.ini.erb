@@ -1,0 +1,16 @@
+; /etc/hhvm/server.ini
+; based on:
+; - https://gist.github.com/colin-kiegel/591840fcbce9d5eb7c78
+; - https://github.com/VisiStruct/LEMH-Server/blob/master/hhvm/server.ini
+
+; php options
+pid = /var/run/hhvm/pid
+
+; hhvm specific
+hhvm.server.file_socket = <%= @hhvm_socket_file %>; a local UNIX-Socket has less overhead than using TCP
+; hhvm.server.port = 9000
+hhvm.server.type = fastcgi
+hhvm.server.default_document = index.php
+hhvm.log.use_log_file = true
+hhvm.log.file = /var/log/hhvm/error.log
+hhvm.repo.central.path = /var/run/hhvm/hhvm.hhbc

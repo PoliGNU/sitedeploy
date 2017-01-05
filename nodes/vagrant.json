@@ -13,6 +13,17 @@
     "default_site_enabled": false,
     "source": { "modules": [ "nginx::http_gzip_static_module" ] }
   },
+  "hhvm": {
+    "php": {
+      "memory_limit": "1200M",
+      "post_max_size": "22M",
+      "upload_max_filesize": "22M",
+      "debug_mode": false
+    },
+    "server": {
+      "socket_file": "/var/run/hhvm/hhvm.sock"
+    }
+  },
   "mariadb": {
     "password": {
       "root": "password_basico_inicial",

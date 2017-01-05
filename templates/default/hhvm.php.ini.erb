@@ -1,0 +1,24 @@
+; /etc/hhvm/php.ini
+; based on:
+; - https://gist.github.com/colin-kiegel/591840fcbce9d5eb7c78
+; - https://github.com/VisiStruct/LEMH-Server/blob/master/hhvm/server.ini
+
+; php options
+session.save_handler = files
+session.save_path = /var/lib/hhvm/sessions
+session.gc_maxlifetime = 1440
+max_execution_time = 300
+max_input_time = 60
+memory_limit = <%= @memoy_limit %>
+post_max_size = <%= @post_max_size %>
+upload_max_filesize = <%= @upload_max_filesize %>
+
+; hhvm specific
+hhvm.log.level = Warning
+hhvm.log.always_log_unhandled_exceptions = true
+hhvm.log.runtime_error_reporting_level = 8191
+hhvm.mysql.typed_results = false
+; hhvm.mysql.socket=/var/run/mysqld/mysqld.sock
+
+; Developer settings
+hhvm.debug.server_error_message = <%= @debug_mode %>; <=> corresponds to "display_errors" in PHP - set it to 'true' on test systems
