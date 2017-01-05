@@ -97,6 +97,17 @@ link '/etc/nginx/hhvm.conf' do
   to "#{confs_folder}/nginx.hhvm.conf"
 end
 
+template "#{confs_folder}/nginx.security.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx.security.conf.erb'
+end
+
+link '/etc/nginx/security.conf' do
+  to "#{confs_folder}/nginx.security.conf"
+end
+
 service 'nginx' do
   action :restart
 end

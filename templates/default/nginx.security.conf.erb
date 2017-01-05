@@ -1,0 +1,55 @@
+# Stops Nginx from loading files with the following extensions.
+# Nginx would display them as source, and we don't want that.
+location ~* \.(engine|inc|info|install|make|module|profile|test|po|sh|.*sql|theme|tpl(\.php)?|xtmpl)$|^(\..*|Entries.*|Repository|Root|Tag|Template)$|\.php_ {
+  return 444;
+}
+
+# Deny some general files
+location ~ /(readme\.html|license\.txt) {
+  deny all;
+}
+
+# Deny config files (WP and Drupal for now)
+location ~ /(\.|wp-config\.php|wp-config\.txt|settings\.php) {
+  deny all;
+}
+
+# Block access to drupal private folders
+location ~/sites/.*/private/ {
+  deny all;
+}
+
+# Deny access to uploads which aren’t images, videos, music, etc.
+location ~* ^/wp-content/uploads/.*.(html|htm|shtml|php|js|swf)$ {
+  deny all;
+}
+
+# Protects against hacks by disabling CGI applications from running on your site.
+location ~* \.(pl|cgi|py|sh|lua)\$ {
+  return 444;
+}
+
+# http://feross.org/cmsploit/
+location ~* \.(bak|php~|php#|php.save|php.swp|php.swo)$ {
+  return 444;
+}
+
+# Rate limiting WordPress logins
+# location /wp-login.php {
+#   limit_req zone=wplogin burst=1 nodelay;
+#   fastcgi_pass unix:/var/run/hhvm/hhvm.sock;
+# }
+
+# Deny access to dot files and dot directories
+location ~ /\. {
+  access_log off; log_not_found off; deny all;
+}
+
+location ~ ~$  {
+  access_log off; log_not_found off; deny all;
+}
+
+# Deny access to git directories
+location ~ /\.git {
+  access_log off; log_not_found off; deny all;
+}
