@@ -17,13 +17,32 @@
 # You should have received a copy of the GNU General Public License along with
 # Radar Parlamentar.  If not, see <http://www.gnu.org/licenses/>.
 
-# mysql variables
-default['mysql']['root_password'] = nil
-default['mysql']['polignu']['user'] = nil
-default['mysql']['polignu']['password'] = nil
-default['mysql']['polignu']['database_name'] = nil
-default['mysql']['poligen']['user'] = nil
-default['mysql']['poligen']['password'] = nil
-default['mysql']['poligen']['database_name'] = nil
-default['mysql']['users_privileges'] = [:select, :update, :insert]
-default['mysql']['bind_address'] = nil
+# mysql/mariaDB
+default['db']['root_password'] = nil
+default['db']['polignu']['user'] = nil
+default['db']['polignu']['password'] = nil
+default['db']['polignu']['database_name'] = nil
+default['db']['poligen']['user'] = nil
+default['db']['poligen']['password'] = nil
+default['db']['poligen']['database_name'] = nil
+default['db']['users_privileges'] = [:select, :update, :insert]
+default['db']['bind_address'] = nil
+
+# System
+default["linux_user"] = "vagrant"
+default["users"] = ["polignu"]
+default["authorization"]["sudo"]["groups"] = ["vagrant", "polignu", "wheel", "sysadmin"]
+default["authorization"]["sudo"]["users"] = ["vagrant", "polignu"]
+default["authorization"]["sudo"]["passwordless"] = "false"
+default["server_name"]  = "localhost"
+
+# nginx
+default["nginx"]["default_site_enabled"] = false
+default["nginx"]["source"]["modules"] = ["nginx::http_gzip_static_module"]
+
+#hhvm
+default["hhvm"]["php"]["memory_limit"] = "1200M"
+default["hhvm"]["php"]["post_max_size"] = "22M"
+default["hhvm"]["php"]["upload_max_filesize"] = "22M"
+default["hhvm"]["php"]["debug_mode"] = false
+default["hhvm"]["server"]["socket_file"] = "/var/run/hhvm/hhvm.sock"
