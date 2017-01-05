@@ -86,6 +86,17 @@ file '/etc/nginx/sites-enabled/default' do
   action :delete
 end
 
+template "#{confs_folder}/nginx.hhvm.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx.hhvm.conf.erb'
+end
+
+link '/etc/nginx/hhvm.conf' do
+  to "#{confs_folder}/nginx.hhvm.conf"
+end
+
 service 'nginx' do
   action :restart
 end

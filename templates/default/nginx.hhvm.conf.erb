@@ -1,0 +1,41 @@
+# /etc/nginx/hhvm.conf
+# Based on:
+# - https://github.com/VisiStruct/LEMH-Server/blob/master/nginx/hhvm.conf
+# - https://gist.github.com/colin-kiegel/591840fcbce9d5eb7c78
+
+#fastcgi_cache start
+set $no_cache 0;
+
+# POST requests and urls with a query string should always go to PHP
+if ($request_method = POST) { set $no_cache 1; } if ($query_string != "") {
+  set $no_cache 1;
+}
+
+# Don't cache uris containing the following segments
+if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|wp-.*.php|/feed/|index.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {
+  set $no_cache 1;
+}
+
+# Don't use the cache for logged in users or recent commenters
+if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_no_cache|wordpress_logged_in") {
+  set $no_cache 1;
+}
+
+# Purge Cache
+# TODO: Understand how does this work...
+location ~ /purge(/.*) {
+  fastcgi_cache_purge VisiStructWP "$scheme$request_method$host$1";
+}
+
+location ~ \.(hh|php)$ {
+  fastcgi_keep_conn on;
+  # fastcgi_pass      127.0.0.1:9000;
+  fastcgi_pass      unix:/var/run/hhvm/hhvm.sock;
+  fastcgi_index     index.php;
+  include           fastcgi.conf;
+  fastcgi_cache     VisiStructWP;  # TODO: the same as the above TODO.
+  fastcgi_cache_valid 200 302 2h;
+  fastcgi_cache_valid 301 2h;
+  fastcgi_cache_valid any 2h;
+  add_header X-FastCGI-Cached $upstream_cache_status;
+}
