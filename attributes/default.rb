@@ -41,7 +41,7 @@ default["nginx"]["default_site_enabled"] = false
 default["nginx"]["source"]["modules"] = ["nginx::http_gzip_static_module"]
 
 #hhvm
-default["hhvm"]["php"]["memory_limit"] = "1200M"
+default["hhvm"]["php"]["memory_limit"] = "600M"
 default["hhvm"]["php"]["post_max_size"] = "22M"
 default["hhvm"]["php"]["upload_max_filesize"] = "22M"
 default["hhvm"]["php"]["debug_mode"] = false
