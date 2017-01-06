@@ -102,6 +102,17 @@ package 'varnish'
 
 package "letsencrypt"
 
+template "#{confs_folder}/nginx.snippets.letsencrypt-challange.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx.snippets.letsencrypt-challange.conf.erb'
+end
+
+link '/etc/nginx/snippets/letsencrypt-challange.conf' do
+  to "#{confs_folder}/nginx.snippets.letsencrypt-challange.conf"
+end
+
 ###############
 # Install nginx
 

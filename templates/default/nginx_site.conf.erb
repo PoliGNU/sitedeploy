@@ -19,6 +19,8 @@ server {
   # Including some SSL configs
   include snippets/ssl-setup.conf;
 
+  include     snippets/letsencrypt-challange.conf;
+
   return      301 https://$domain:<%= @ssl_public_port %>$request_uri;
 }
 
