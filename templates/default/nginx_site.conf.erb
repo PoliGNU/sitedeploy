@@ -1,24 +1,40 @@
-# Redirect www to non-www website (always remove the www)
-server {
-  server_name www.<%= @server_name %>;
-  return 301  $scheme://<%= @server_name %>$request_uri;
-}
-
-# Redirect http (80) to https (443)
+# Redirect all http (80) to https (443) (www and non-www)
 server {
   listen       80;
-  server_name  <%= @server_name %>;
+  listen       <%= @ssl_public_port %>;
+  # listen       [::]:80 ipv6only=on;
+  server_name  <%= @server_name %> www.<%= @server_name %>;
   return       301 https://$server_name:<%= @ssl_public_port %>$request_uri;
+}
+
+# Redirect www https traffic to non-www https traffic
+server {
+  listen      <%= @ssl_public_port %> ssl http2;
+  # listen      [::]:<%= @ssl_public_port %> ipv6only=on;
+  server_name www.<%= @server_name %>;
+
+  # TODO
+  ssl_certificate     /etc/nginx/ssl/nginx.crt;  # Change to letsencrypt cert
+  ssl_certificate_key /etc/nginx/ssl/nginx.key;  # Change to letsencrypt cert
+
+  # Including some SSL configs
+  include snippets/ssl-setup.conf;
+
+  return      301 https://$server_name:<%= @ssl_public_port %>$request_uri;
 }
 
 # Do the https magic and proxy the request to varnish on port 6081
 server {
-  listen 443 ssl http2;
+  listen <%= @ssl_public_port %> ssl http2;
+  # listen [::]:<%= @ssl_public_port %> ipv6only=on;
   server_name <%= @server_name %>;
 
   # TODO
   ssl_certificate     /etc/nginx/ssl/nginx.crt;  # Change to letsencrypt cert
   ssl_certificate_key /etc/nginx/ssl/nginx.key;  # Change to letsencrypt cert
+
+  # Including some SSL configs
+  include snippets/ssl-setup.conf;
 
   # Defining personal log files
   access_log /var/log/nginx/<%= @server_name %>.access.log;
@@ -47,9 +63,6 @@ server {
 
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
-
-  # Including some SSL improvements
-  include snippets/ssl-setup.conf;
 
   # Security resources
   include snippets/security.conf;
