@@ -1,0 +1,19 @@
+# FastCGI Cache
+fastcgi_cache_path /var/run/nginx-cache levels=1:2 keys_zone=VisiStructWP:500m inactive=60m;
+fastcgi_cache_key $scheme$request_method$host$request_uri;
+fastcgi_cache_use_stale error timeout updating invalid_header http_500 http_503;
+fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
+fastcgi_ignore_client_abort off;
+fastcgi_intercept_errors on;
+fastcgi_connect_timeout 60;
+fastcgi_send_timeout 180;
+fastcgi_read_timeout 180;
+fastcgi_buffer_size 256k;
+fastcgi_buffers 4 256k;
+fastcgi_busy_buffers_size 256k;
+fastcgi_temp_file_write_size 256k;
+fastcgi_cache_bypass $no_cache;
+fastcgi_no_cache $no_cache;
+fastcgi_max_temp_file_size 5m;
+fastcgi_pass_header Set-Cookie;
+fastcgi_pass_header Cookie;
