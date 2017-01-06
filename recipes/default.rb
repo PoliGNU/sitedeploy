@@ -100,6 +100,8 @@ package 'varnish'
 ###############################
 # Install letsencrypt (certbot)
 
+package "letsencrypt"
+
 ###############
 # Install nginx
 
