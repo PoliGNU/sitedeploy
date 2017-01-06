@@ -19,6 +19,6 @@ suites:
     attributes: {
         linux_user : "vagrant",
         server_name : "localhost",
-        ssl_public_port : "8443"
+        ssl_public_port : "443"
     }
 

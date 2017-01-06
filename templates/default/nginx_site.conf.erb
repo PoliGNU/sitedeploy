@@ -1,7 +1,6 @@
 # Redirect all http (80) to https (443) (www and non-www)
 server {
   listen       80;
-  listen       <%= @ssl_public_port %>;
   # listen       [::]:80 ipv6only=on;
   server_name  <%= @server_name %> www.<%= @server_name %>;
   return       301 https://$server_name:<%= @ssl_public_port %>$request_uri;
@@ -11,7 +10,7 @@ server {
 server {
   listen      <%= @ssl_public_port %> ssl http2;
   # listen      [::]:<%= @ssl_public_port %> ipv6only=on;
-  server_name www.<%= @server_name %>;
+  server_name ~^(www\.)(?<domain><%= @server_name %>)$;
 
   # TODO
   ssl_certificate     /etc/nginx/ssl/nginx.crt;  # Change to letsencrypt cert
@@ -20,7 +19,7 @@ server {
   # Including some SSL configs
   include snippets/ssl-setup.conf;
 
-  return      301 https://$server_name:<%= @ssl_public_port %>$request_uri;
+  return      301 https://$domain:<%= @ssl_public_port %>$request_uri;
 }
 
 # Do the https magic and proxy the request to varnish on port 6081
