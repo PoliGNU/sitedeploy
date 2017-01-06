@@ -32,16 +32,14 @@ http {
   # FastCGI Cache
   include fastcgi_cache.conf;
 
-  more_set_headers 'X-Powered-By: Polignu.org';
-
   index index.html index.php index.htm;
   charset utf-8;
 
   # Log format
   log_format main '$remote_addr - $remote_user [$time_local] $request '
                   '"$status" $body_bytes_sent "$http_referer" '
-                  '"$http_user_agent" "$http_x_forwarded_for" "gzip_ratio"'
-                  '"$connection$" "$connection_requests" "$request_time"';
+                  '"$http_user_agent" "$http_x_forwarded_for" "gzip_ratio" '
+                  '"$connection" "$connection_requests" "$request_time"';
   # Logging files
   access_log                    /var/log/nginx/access.log;
   error_log                     /var/log/nginx/error.log;
@@ -88,7 +86,7 @@ http {
   connection_pool_size          512;
   directio                      4m;
   ignore_invalid_headers        on;
-  large_client_header_buffers   8 64;
+  large_client_header_buffers   8 64k;
   output_buffers                8 256k;
   postpone_output               1460;
   proxy_temp_path               /tmp/nginx_proxy/;

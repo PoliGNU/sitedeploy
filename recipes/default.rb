@@ -32,100 +32,6 @@ execute 'apt-get update'
 
 package 'openssl'
 
-###############
-# Install nginx
-
-package 'nginx'
-
-root_folder = "#{polignu_folder}/www"
-
-directory root_folder do
-  mode '755'
-  action :create
-end
-
-cookbook_file "#{root_folder}/index.html" do
-  mode '644'
-  source 'test.html'
-end
-
-ssl_folder = '/etc/nginx/ssl'
-
-directory ssl_folder do
-  mode '755'
-  action :create
-end
-
-cookbook_file "#{ssl_folder}/nginx.crt" do
-  mode '644'
-  source 'nginx.crt'
-end
-
-cookbook_file "#{ssl_folder}/nginx.key" do
-  mode '644'
-  source 'nginx.key'
-end
-
-template "#{confs_folder}/nginx_polignu.conf" do
-  mode '644'
-  owner user
-  group user
-  source 'nginx_site.conf.erb'
-  variables(
-    server_name: node['server_name'],
-    ssl_public_port: node['ssl_public_port'],
-    root_folder: root_folder
-  )
-end
-
-link '/etc/nginx/sites-enabled/polignu.conf' do
-  to "#{confs_folder}/nginx_polignu.conf"
-end
-
-file '/etc/nginx/sites-enabled/default' do
-  action :delete
-end
-
-template "#{confs_folder}/nginx.hhvm.conf" do
-  mode '644'
-  owner user
-  group user
-  source 'nginx.hhvm.conf.erb'
-end
-
-link '/etc/nginx/hhvm.conf' do
-  to "#{confs_folder}/nginx.hhvm.conf"
-end
-
-template "#{confs_folder}/nginx.security.conf" do
-  mode '644'
-  owner user
-  group user
-  source 'nginx.security.conf.erb'
-end
-
-link '/etc/nginx/security.conf' do
-  to "#{confs_folder}/nginx.security.conf"
-end
-
-template "#{confs_folder}/nginx.ssl_setup.conf" do
-  mode '644'
-  owner user
-  group user
-  source 'nginx.ssl_setup.conf.erb'
-end
-
-link '/etc/nginx/ssl_setup.conf' do
-  to "#{confs_folder}/nginx.ssl_setup.conf"
-end
-
-# Generationg dhparam file (see nginx.ssl_setup.conf.erb for more info)
-execute "openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048"
-
-service 'nginx' do
-  action :restart
-end
-
 ##############
 # Install HHVM
 
@@ -193,6 +99,138 @@ package 'varnish'
 
 ###############################
 # Install letsencrypt (certbot)
+
+###############
+# Install nginx
+
+package 'nginx'
+
+root_folder = "#{polignu_folder}/www"
+
+directory root_folder do
+  mode '755'
+  action :create
+end
+
+cookbook_file "#{root_folder}/index.html" do
+  mode '644'
+  source 'test.html'
+end
+
+ssl_folder = '/etc/nginx/ssl'
+
+directory ssl_folder do
+  mode '755'
+  action :create
+end
+
+cookbook_file "#{ssl_folder}/nginx.crt" do
+  mode '644'
+  source 'nginx.crt'
+end
+
+cookbook_file "#{ssl_folder}/nginx.key" do
+  mode '644'
+  source 'nginx.key'
+end
+
+template "#{confs_folder}/nginx.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx.conf.erb'
+end
+
+link '/etc/nginx/nginx.conf' do
+  to "#{confs_folder}/nginx.conf"
+end
+
+file '/etc/nginx/nginx.conf' do
+    verify 'nginx -t -c %{file}'
+end
+
+link '/etc/nginx/security.conf' do
+  to "#{confs_folder}/nginx.security.conf"
+end
+
+template "#{confs_folder}/nginx.ssl_setup.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx.ssl_setup.conf.erb'
+end
+
+link '/etc/nginx/ssl_setup.conf' do
+  to "#{confs_folder}/nginx.ssl_setup.conf"
+end
+
+template "#{confs_folder}/nginx.fastcgi_cache.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx.fastcgi_cache.conf.erb'
+end
+
+link '/etc/nginx/fastcgi_cache.conf' do
+  to "#{confs_folder}/nginx.fastcgi_cache.conf"
+end
+
+template "#{confs_folder}/nginx.hhvm.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx.hhvm.conf.erb'
+end
+
+link '/etc/nginx/hhvm.conf' do
+  to "#{confs_folder}/nginx.hhvm.conf"
+end
+
+template "#{confs_folder}/nginx.security.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx.security.conf.erb'
+end
+
+template "#{confs_folder}/nginx_polignu.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx_site.conf.erb'
+  variables(
+    server_name: node['server_name'],
+    ssl_public_port: node['ssl_public_port'],
+    root_folder: root_folder
+  )
+end
+
+link '/etc/nginx/sites-enabled/polignu.conf' do
+  to "#{confs_folder}/nginx_polignu.conf"
+end
+
+file '/etc/nginx/sites-enabled/default' do
+  action :delete
+end
+
+file '/etc/nginx/nginx.conf' do
+    verify 'nginx -t'
+end
+
+file '/etc/ssl/certs/dhparam.pem' do
+    verify { 1 == 1 }
+    only_if {  }
+end
+
+# Generationg dhparam file (see nginx.ssl_setup.conf.erb for more info)
+execute 'generate dhparam' do
+  command "openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048"
+  only_if { not File.exist? '/etc/ssl/certs/dhparam.pem' }
+end
+
+service 'nginx' do
+  action :restart
+end
 
 ###############################
 # Setup Drupal (polignu/poligen)

@@ -52,7 +52,7 @@ server {
   include ssl_setup.conf;
 
   # Security resources
-  include global/security.conf
+  include security.conf;
 
   # Pass the request to varnish
   location / {
