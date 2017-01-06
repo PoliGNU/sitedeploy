@@ -48,6 +48,10 @@ server {
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
 
+  # Security resources
+  include global/security.conf
+
+  # Pass the request to varnish
   location / {
     # running varnish on port 8080
     proxy_pass       http://127.0.0.1:6081;
