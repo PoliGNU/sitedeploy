@@ -35,6 +35,7 @@ default["authorization"]["sudo"]["groups"] = ["vagrant", "polignu", "wheel", "sy
 default["authorization"]["sudo"]["users"] = ["vagrant", "polignu"]
 default["authorization"]["sudo"]["passwordless"] = "false"
 default["server_name"]  = "localhost"
+default["ssl_public_port"] = 443
 
 # nginx
 default["nginx"]["default_site_enabled"] = false
