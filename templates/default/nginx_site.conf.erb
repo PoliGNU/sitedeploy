@@ -3,6 +3,9 @@ server {
   listen       80;
   # listen       [::]:80 ipv6only=on;
   server_name  <%= @server_name %> www.<%= @server_name %>;
+
+  include      snippets/letsencrypt-challange.conf;
+
   return       301 https://$server_name:<%= @ssl_public_port %>$request_uri;
 }
 
@@ -41,6 +44,8 @@ server {
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
 
+  include snippets/letsencrypt-challange.conf;
+
   # Pass the request to varnish
   location / {
     # running varnish on port 6081
@@ -65,6 +70,8 @@ server {
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
 
+  include     snippets/letsencrypt-challange.conf;
+
   # Security resources
   include snippets/security.conf;
 
@@ -86,6 +93,8 @@ server {
   # Only listen to localhost requests (from varnish)
   listen      127.0.0.1:8080;
   server_name <%= @server_name %>;
+
+  include     snippets/letsencrypt-challange.conf;
 
   root <%= @root_folder %>;
   index index.php index.html index.htm;
