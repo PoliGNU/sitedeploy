@@ -27,6 +27,11 @@ end
 
 execute 'apt-get update'
 
+##################
+# Install openssl
+
+package 'openssl'
+
 ###############
 # Install nginx
 
