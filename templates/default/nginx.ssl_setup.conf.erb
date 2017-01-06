@@ -1,0 +1,63 @@
+# /etc/nginx/ssl_setup.conf
+# Main References:
+# R1: https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04
+# R2: https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
+#     - https://raymii.org/s/tutorials/OCSP_Stapling_on_nginx.html
+#     - https://raymii.org/s/tutorials/HTTP_Strict_Transport_Security_for_Apache_NGINX_and_Lighttpd.html
+# Extra: https://gist.github.com/konklone/6532544 - take a look at the discussion
+#
+# Other references:
+# R3: http://vincent.bernat.im/en/blog/2011-ssl-session-reuse-rfc5077.html
+# R4: http://blog.ivanristic.com/2013/09/is-beast-still-a-threat.html
+# R5: http://blog.mozilla.org/security/2013/07/29/ocsp-stapling-in-firefox/
+# R6: https://en.wikipedia.org/wiki/SSL_stripping#SSL_stripping
+# R7: https://developer.mozilla.org/en-US/docs/Security/HTTP_Strict_Transport_Security
+# R8: https://www.nginx.com/blog/http-strict-transport-security-hsts-and-nginx/
+# R9: http://www.westphahl.net/blog/2012/01/03/setting-up-https-with-nginx-and-startssl/
+# R10: https://sslmate.com/blog/post/ocsp_stapling_in_apache_and_nginx
+
+# Allows all modern and legacy clients to connect over TLS.
+ssl_protocols TLSv1 TLSv1.1 TLSv1.2;  # R1/R2
+# ssl_protocols TLSv1.2;  # latest TLS, drops IE8-IE10 and Android 4.3.
+
+ssl_prefer_server_ciphers on;  # R1/R2
+# This requires strong forward secrecy (ECDHE) for all connections.
+# However, it blocks IE8+XP and Android 2.3.
+ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";  # R1/R2
+## ATTENTION: This file need to be generated with:
+#             sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+ssl_dhparam    /etc/ssl/certs/dhparam.pem; # R2
+ssl_ecdh_curve secp384r1;  # R1
+
+# Turn on session resumption, using a 10 min cache shared across nginx
+# processes
+ssl_session_cache   shared:SSL:10m;  # R1/R2
+ssl_session_timeout 10m;
+keepalive_timeout   70;
+ssl_session_tickets off;  # R1
+
+# OCSP stapling: nginx will poll the CA for signed OCSP responses, and
+# send them to clients so clients don't make their own OCSP calls.
+ssl_stapling        on;  # R1/R2
+ssl_stapling_verify on;  # R1/R2
+resolver            8.8.8.8 8.8.4.4 valid=300s;  # R1/R2
+resolver_timeout    5s;  # R1/R2
+# What about this config? Does it work with letsencrypt and multiple domains?
+# ssl_trusted_certificate
+# Should this be configured per domain? Is it required for OCSP?
+
+# HTTP Strict Transport Security: tells browsers to require https:// without
+# first checking the http:// version for a redirect.
+#
+#   max-age: length of requirement in seconds (31536000 = 1 year)
+#   includeSubdomains: force TLS for *ALL* subdomains (remove if this is not what you want)
+#
+# **ATTENTION** Avoid using the preload here if you are not absolutely sure of
+# how it works and if this is really what you want.
+#
+add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; ";  # R1/R2
+add_header X-Frame-Options "DENY";  # R1
+add_header X-Content-Type-ptions nosniff;  # R1
+
+# For a even more secure config, take a look at HTTP Public Key Pinning Extension
+# https://raymii.org/s/articles/HTTP_Public_Key_Pinning_Extension_HPKP.html

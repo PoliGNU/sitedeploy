@@ -48,6 +48,9 @@ server {
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
 
+  # Including some SSL improvements
+  include ssl_setup.conf;
+
   # Security resources
   include global/security.conf
 

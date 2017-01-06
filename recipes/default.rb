@@ -113,6 +113,20 @@ link '/etc/nginx/security.conf' do
   to "#{confs_folder}/nginx.security.conf"
 end
 
+template "#{confs_folder}/nginx.ssl_setup.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx.ssl_setup.conf.erb'
+end
+
+link '/etc/nginx/ssl_setup.conf' do
+  to "#{confs_folder}/nginx.ssl_setup.conf"
+end
+
+# Generationg dhparam file (see nginx.ssl_setup.conf.erb for more info)
+execute "openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048"
+
 service 'nginx' do
   action :restart
 end
