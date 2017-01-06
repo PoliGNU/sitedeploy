@@ -149,19 +149,26 @@ file '/etc/nginx/nginx.conf' do
     verify 'nginx -t -c %{file}'
 end
 
-link '/etc/nginx/security.conf' do
-  to "#{confs_folder}/nginx.security.conf"
-end
-
-template "#{confs_folder}/nginx.ssl_setup.conf" do
+template "#{confs_folder}/nginx.snippets.security.conf" do
   mode '644'
   owner user
   group user
-  source 'nginx.ssl_setup.conf.erb'
+  source 'nginx.snippets.security.conf.erb'
 end
 
-link '/etc/nginx/ssl_setup.conf' do
-  to "#{confs_folder}/nginx.ssl_setup.conf"
+link '/etc/nginx/snippets/security.conf' do
+  to "#{confs_folder}/nginx.snippets.security.conf"
+end
+
+template "#{confs_folder}/nginx.snippets.ssl-setup.conf" do
+  mode '644'
+  owner user
+  group user
+  source 'nginx.snippets.ssl-setup.conf.erb'
+end
+
+link '/etc/nginx/snippets/ssl-setup.conf' do
+  to "#{confs_folder}/nginx.snippets.ssl-setup.conf"
 end
 
 template "#{confs_folder}/nginx.fastcgi_cache.conf" do
@@ -175,22 +182,15 @@ link '/etc/nginx/fastcgi_cache.conf' do
   to "#{confs_folder}/nginx.fastcgi_cache.conf"
 end
 
-template "#{confs_folder}/nginx.hhvm.conf" do
+template "#{confs_folder}/nginx.snippets.hhvm.conf" do
   mode '644'
   owner user
   group user
-  source 'nginx.hhvm.conf.erb'
+    source 'nginx.snippets.hhvm.conf.erb'
 end
 
-link '/etc/nginx/hhvm.conf' do
-  to "#{confs_folder}/nginx.hhvm.conf"
-end
-
-template "#{confs_folder}/nginx.security.conf" do
-  mode '644'
-  owner user
-  group user
-  source 'nginx.security.conf.erb'
+link '/etc/nginx/snippets/hhvm.conf' do
+  to "#{confs_folder}/nginx.snippets.hhvm.conf"
 end
 
 template "#{confs_folder}/nginx_polignu.conf" do

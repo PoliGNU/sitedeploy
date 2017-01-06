@@ -49,10 +49,10 @@ server {
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
 
   # Including some SSL improvements
-  include ssl_setup.conf;
+  include snippets/ssl-setup.conf;
 
   # Security resources
-  include security.conf;
+  include snippets/security.conf;
 
   # Pass the request to varnish
   location / {
@@ -79,5 +79,5 @@ server {
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
 
-  include hhvm.conf;
+  include snippets/hhvm.conf;
 }
