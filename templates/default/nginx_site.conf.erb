@@ -76,5 +76,62 @@ server {
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
 
+  # In some cases a favicon does not exist but this is not something you
+  # normally need to worry about. It's also a microscopic image and will
+  # just clutter the logs.
+  location = /favicon.ico {
+    log_not_found off;
+    access_log off;
+  }
+
+  # This is for the robots.txt file used by search engines.
+  location = /robots.txt {
+    # If you have one, you want to allow them access to it.
+    allow all;
+    # If you don't have one, you don't want to fill your logs with
+    # not found errors.
+    log_not_found off;
+    access_log off;
+  }
+
+  # This matters if you use drush because drush copies backups of modules
+  # to this directory. In the event personal information wound up in the
+  # module, you want to know outside users can't access it.
+  location = /backup {
+    deny all;
+  }
+
+  # Very rarely should these ever be accessed outside of your lan
+  # The above location for robots.txt is an exact match and will override
+  # this location block.
+  location ~* \.(txt|log)$ {
+    allow 192.168.0.0/16;
+    deny all;
+  }
+
+  # This location block protects against a known attack. It happens if
+  # the attacker uploads a non-php file and attempts to run it as a
+  # php file on the server.
+  location ~ \..*/.*\.php$ {
+    return 403;
+  }
+
+  # This is our primary location block. The try_files directive will
+  # attempt to serve the data in the order listed. First try the exact
+  # request (such as an image or text file). If it doesn't exist, see if
+  # the directory exists. If not, then we move to the rewrite which is
+  # used for the front-end controller pattern.
+  location / {
+    try_files $uri $uri/ @rewrite;
+  }
+
+  # This will rewrite our request from domain.com/node/1/ to domain.com/index.php?q=node/1
+  # This could be done in try_files without a rewrite however, the GlobalRedirect
+  # module enforces no slash (/) at the end of URL's. This rewrite removes that
+  # so no infinite redirect loop is reached.
+  location @rewrite {
+    rewrite ^/(.*)$ /index.php?q=$1;
+  }
+
   include snippets/hhvm.conf;
 }
