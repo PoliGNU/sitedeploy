@@ -1,11 +1,6 @@
-# This is an example VCL file for Varnish.
-#
-# It does not do anything by default, delegating control to the
-# builtin VCL. The builtin VCL is called when there is no explicit
-# return statement.
-#
 # See the VCL chapters in the Users Guide at https://www.varnish-cache.org/docs/
 # and https://www.varnish-cache.org/trac/wiki/VCLExamples for more examples.
+# Ref: https://www.digitalocean.com/community/tutorials/how-to-configure-varnish-cache-4-0-with-ssl-termination-on-ubuntu-14-04
 
 # Marker to tell the VCL compiler that this VCL has been adapted to the
 # new 4.0 format.
@@ -29,6 +24,12 @@ sub vcl_backend_response {
     #
     # Here you clean the response headers, removing silly Set-Cookie headers
     # and other mistakes your backend does.
+
+    # "grace mode": instructs Varnish to serve a cached copy of requested pages
+    #               if your web server backend goes down and becomes
+    #               unavailable
+    set beresp.ttl = 10s;
+    set beresp.grace = 1h;
 }
 
 sub vcl_deliver {
