@@ -9,7 +9,9 @@
 
 user = node['linux_user']
 polignu_folder = "/home/#{user}/polignu"
-confs_folder = "#{polignu_folder}/confs"
+confs_base_folder = "#{polignu_folder}/confs"
+nginx_folder = "/etc/nginx"
+nginx_snippets = "#{nginx_folder}/snippets"
 
 directory polignu_folder do
   owner user
@@ -18,7 +20,21 @@ directory polignu_folder do
   action :create
 end
 
-directory confs_folder do
+directory confs_base_folder do
+  owner user
+  group user
+  mode '755'
+  action :create
+end
+
+directory nginx_folder do
+  owner user
+  group user
+  mode '755'
+  action :create
+end
+
+directory nginx_snippets do
   owner user
   group user
   mode '755'
@@ -52,7 +68,7 @@ service 'hhvm' do
   action :start
 end
 
-template "#{confs_folder}/hhvm.php.ini" do
+template "#{confs_base_folder}/hhvm.php.ini" do
   mode '644'
   owner user
   group user
@@ -66,10 +82,10 @@ template "#{confs_folder}/hhvm.php.ini" do
 end
 
 link '/etc/hhvm/php.ini' do
-  to "#{confs_folder}/hhvm.php.ini"
+  to "#{confs_base_folder}/hhvm.php.ini"
 end
 
-template "#{confs_folder}/hhvm.server.ini" do
+template "#{confs_base_folder}/hhvm.server.ini" do
   mode '644'
   owner user
   group user
@@ -80,7 +96,7 @@ template "#{confs_folder}/hhvm.server.ini" do
 end
 
 link '/etc/hhvm/server.ini' do
-  to "#{confs_folder}/hhvm.server.ini"
+  to "#{confs_base_folder}/hhvm.server.ini"
 end
 
 service 'hhvm' do
@@ -102,15 +118,15 @@ package 'varnish'
 
 package "letsencrypt"
 
-template "#{confs_folder}/nginx.snippets.letsencrypt-challange.conf" do
+template "#{confs_base_folder}/nginx.snippets.letsencrypt-challange.conf" do
   mode '644'
   owner user
   group user
   source 'nginx.snippets.letsencrypt-challange.conf.erb'
 end
 
-link '/etc/nginx/snippets/letsencrypt-challange.conf' do
-  to "#{confs_folder}/nginx.snippets.letsencrypt-challange.conf"
+link "#{nginx_snippets}/letsencrypt-challange.conf" do
+  to "#{confs_base_folder}/nginx.snippets.letsencrypt-challange.conf"
 end
 
 ###############
@@ -147,7 +163,7 @@ cookbook_file "#{ssl_folder}/nginx.key" do
   source 'nginx.key'
 end
 
-template "#{confs_folder}/nginx.conf" do
+template "#{confs_base_folder}/nginx.conf" do
   mode '644'
   owner user
   group user
@@ -155,14 +171,14 @@ template "#{confs_folder}/nginx.conf" do
 end
 
 link '/etc/nginx/nginx.conf' do
-  to "#{confs_folder}/nginx.conf"
+  to "#{confs_base_folder}/nginx.conf"
 end
 
 file '/etc/nginx/nginx.conf' do
     verify 'nginx -t -c %{file}'
 end
 
-template "#{confs_folder}/nginx.snippets.security.conf" do
+template "#{confs_base_folder}/nginx.snippets.security.conf" do
   mode '644'
   owner user
   group user
@@ -170,10 +186,10 @@ template "#{confs_folder}/nginx.snippets.security.conf" do
 end
 
 link '/etc/nginx/snippets/security.conf' do
-  to "#{confs_folder}/nginx.snippets.security.conf"
+  to "#{confs_base_folder}/nginx.snippets.security.conf"
 end
 
-template "#{confs_folder}/nginx.snippets.ssl-setup.conf" do
+template "#{confs_base_folder}/nginx.snippets.ssl-setup.conf" do
   mode '644'
   owner user
   group user
@@ -181,10 +197,10 @@ template "#{confs_folder}/nginx.snippets.ssl-setup.conf" do
 end
 
 link '/etc/nginx/snippets/ssl-setup.conf' do
-  to "#{confs_folder}/nginx.snippets.ssl-setup.conf"
+  to "#{confs_base_folder}/nginx.snippets.ssl-setup.conf"
 end
 
-template "#{confs_folder}/nginx.fastcgi_cache.conf" do
+template "#{confs_base_folder}/nginx.fastcgi_cache.conf" do
   mode '644'
   owner user
   group user
@@ -192,10 +208,10 @@ template "#{confs_folder}/nginx.fastcgi_cache.conf" do
 end
 
 link '/etc/nginx/fastcgi_cache.conf' do
-  to "#{confs_folder}/nginx.fastcgi_cache.conf"
+  to "#{confs_base_folder}/nginx.fastcgi_cache.conf"
 end
 
-template "#{confs_folder}/nginx.snippets.hhvm.conf" do
+template "#{confs_base_folder}/nginx.snippets.hhvm.conf" do
   mode '644'
   owner user
   group user
@@ -203,10 +219,10 @@ template "#{confs_folder}/nginx.snippets.hhvm.conf" do
 end
 
 link '/etc/nginx/snippets/hhvm.conf' do
-  to "#{confs_folder}/nginx.snippets.hhvm.conf"
+  to "#{confs_base_folder}/nginx.snippets.hhvm.conf"
 end
 
-template "#{confs_folder}/nginx_polignu.conf" do
+template "#{confs_base_folder}/nginx_polignu.conf" do
   mode '644'
   owner user
   group user
@@ -219,7 +235,7 @@ template "#{confs_folder}/nginx_polignu.conf" do
 end
 
 link '/etc/nginx/sites-enabled/polignu.conf' do
-  to "#{confs_folder}/nginx_polignu.conf"
+  to "#{confs_base_folder}/nginx_polignu.conf"
 end
 
 file '/etc/nginx/sites-enabled/default' do
