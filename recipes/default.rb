@@ -113,6 +113,28 @@ package 'mariadb-server'
 
 package 'varnish'
 
+template "#{confs_base_folder}/etc.default.varnish" do
+  mode '644'
+  owner user
+  group user
+  source 'etc.default.varnish.erb'
+end
+
+link "/etc/default/varnish" do
+  to "#{confs_base_folder}/etc.default.varnish"
+end
+
+template "#{confs_base_folder}/etc.varnish.default.vcl" do
+  mode '644'
+  owner user
+  group user
+  source 'etc.varnish.default.vcl.erb'
+end
+
+link "/etc/varnish/default.vcl" do
+  to "#{confs_base_folder}/etc.varnish.default.vcl"
+end
+
 ###############################
 # Install letsencrypt (certbot)
 
