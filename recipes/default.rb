@@ -131,8 +131,19 @@ template "#{confs_base_folder}/etc.varnish.default.vcl" do
   source 'etc.varnish.default.vcl.erb'
 end
 
-link "/etc/varnish/default.vcl" do
-  to "#{confs_base_folder}/etc.varnish.default.vcl"
+#link "/etc/varnish/default.vcl" do
+#  to "#{confs_base_folder}/etc.varnish.default.vcl"
+#end
+
+cookbook_file "/etc/systemd/system/varnish.service" do
+  mode '644'
+  source 'varnish.service'
+end
+
+execute 'systemctl daemon-reload'
+
+service 'varnish' do
+  action :restart
 end
 
 ###############################
