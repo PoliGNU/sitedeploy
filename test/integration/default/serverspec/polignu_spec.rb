@@ -30,11 +30,6 @@ describe service('hhvm') do
   it { should be_running }
 end
 
-# describe service('varnish') do
-#   it { should be_enabled }
-#   it { should be_running }
-# end
-
 # Varnish
 
 describe service('varnish') do

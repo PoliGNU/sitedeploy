@@ -34,12 +34,20 @@ default["users"] = ["polignu"]
 default["authorization"]["sudo"]["groups"] = ["vagrant", "polignu", "wheel", "sysadmin"]
 default["authorization"]["sudo"]["users"] = ["vagrant", "polignu"]
 default["authorization"]["sudo"]["passwordless"] = "false"
-default["server_name"]  = "localhost"
-default["ssl_public_port"] = 443
+
+default["std"]["server_name"] = "localhost"
+default["std"]["ssl_public_port"] = 443
+
+# PoliGNU configs
+default["polignu"]["server_name"]  = "localhost"
+default["polignu"]["ssl_public_port"] = 443
+default["poligen"]["server_name"]  = "poligen.polignu.org"
+default["poligen"]["ssl_public_port"] = 443
 
 # nginx
 default["nginx"]["default_site_enabled"] = false
 default["nginx"]["source"]["modules"] = ["nginx::http_gzip_static_module"]
+default["nginx"]["real_ip_from"] = "172.24.0.32"
 
 #hhvm
 default["hhvm"]["php"]["memory_limit"] = "600M"

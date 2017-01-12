@@ -4,7 +4,7 @@ server {
   # listen       [::]:80 ipv6only=on;
   server_name  <%= @server_name %> www.<%= @server_name %>;
 
-  include      snippets/letsencrypt-challange.conf;
+  include      polignu_settings/letsencrypt-challange.conf;
 
   return       301 https://$server_name:<%= @ssl_public_port %>$request_uri;
 }
@@ -20,9 +20,9 @@ server {
   ssl_certificate_key /etc/nginx/ssl/nginx.key;  # Change to letsencrypt cert
 
   # Including some SSL configs
-  include snippets/ssl-setup.conf;
+  include polignu_settings/ssl-setup.conf;
 
-  include     snippets/letsencrypt-challange.conf;
+  include     polignu_settings/letsencrypt-challange.conf;
 
   return      301 https://$domain:<%= @ssl_public_port %>$request_uri;
 }
@@ -38,13 +38,13 @@ server {
   ssl_certificate_key /etc/nginx/ssl/nginx.key;  # Change to letsencrypt cert
 
   # Including some SSL configs
-  include snippets/ssl-setup.conf;
+  include polignu_settings/ssl-setup.conf;
 
   # Defining personal log files
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
 
-  include snippets/letsencrypt-challange.conf;
+  include polignu_settings/letsencrypt-challange.conf;
 
   # Pass the request to varnish
   location / {
@@ -68,10 +68,9 @@ server {
   listen      127.0.0.1:8080;
   server_name <%= @server_name %>;
 
-  include     snippets/letsencrypt-challange.conf;
+  include     polignu_settings/letsencrypt-challange.conf;
 
   root <%= @root_folder %>;
-  index index.php index.html index.htm;
 
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
@@ -133,5 +132,5 @@ server {
     rewrite ^/(.*)$ /index.php?q=$1;
   }
 
-  include snippets/hhvm.conf;
+  include polignu_settings/hhvm.conf;
 }
