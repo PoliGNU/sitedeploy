@@ -16,14 +16,6 @@
 # R9: http://www.westphahl.net/blog/2012/01/03/setting-up-https-with-nginx-and-startssl/
 # R10: https://sslmate.com/blog/post/ocsp_stapling_in_apache_and_nginx
 
-# Allows all modern and legacy clients to connect over TLS.
-ssl_protocols TLSv1 TLSv1.1 TLSv1.2;  # R1/R2
-# ssl_protocols TLSv1.2;  # latest TLS, drops IE8-IE10 and Android 4.3.
-
-ssl_prefer_server_ciphers on;  # R1/R2
-# This requires strong forward secrecy (ECDHE) for all connections.
-# However, it blocks IE8+XP and Android 2.3.
-ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";  # R1/R2
 ## ATTENTION: This file need to be generated with:
 #             sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 ssl_dhparam    /etc/ssl/certs/dhparam.pem; # R2
@@ -31,9 +23,6 @@ ssl_ecdh_curve secp384r1;  # R1
 
 # Turn on session resumption, using a 10 min cache shared across nginx
 # processes
-ssl_session_cache   shared:SSL:10m;  # R1/R2
-ssl_session_timeout 10m;
-keepalive_timeout   70;
 ssl_session_tickets off;  # R1
 
 # OCSP stapling: nginx will poll the CA for signed OCSP responses, and
