@@ -1,9 +1,4 @@
-#
-# REFs:
-# - https://github.com/perusio/drupal-with-nginx/blob/D7/nginx.conf
-# - https://github.com/nicolargo/varnish-nginx-wordpress/blob/master/nginx/nginx.conf
-# - https://github.com/VisiStruct/LEMH-Server/blob/master/nginx/nginx.conf
-#
+# /etc/nginx/nginx.conf
 
 user <%= @user %>;  # Here we may use a non-default (www-data) user to avoid
                     # permission errors while nginx tries to access the config
@@ -16,25 +11,23 @@ user <%= @user %>;  # Here we may use a non-default (www-data) user to avoid
 #worker_processes 4;
 
 error_log /var/log/nginx/error.log;
-pid /var/run/nginx.pid;
+pid <%= @nginx_pid_file %>;
 # JIT Regular expression parser. Need nginx built with that.
 # pcre_jit on;
 
 # number of files openned for each connection/client
-worker_rlimit_nofile 2048;
-
-timer_resolution 100ms;  # review
+worker_rlimit_nofile <%= @worker_rlimit_nofile %>;
 
 events {
   # max_clients = worker_processes * worker_connections
-  worker_connections 1024;
+  worker_connections <%= @worker_connections %>;
   # Accept as many connections as possible
   multi_accept on;
 
-  accept_mutex on;  # review
-  accept_mutex_delay 200ms;  # review
+  accept_mutex on;
+  accept_mutex_delay 200ms;
   # Only for Linux 2.6 or >
-  use epoll;  # review
+  use epoll;
 }
 
 http {
@@ -192,7 +185,7 @@ http {
 
   ## Enable this if using HTTPS. See sites-available/example.com.conf
   ## for details.
-  #add_header Strict-Transport-Security "max-age=7200";
+  add_header Strict-Transport-Security "max-age=7200";
 
   ## Block MIME type sniffing on IE.
   add_header X-Content-Options nosniff;
@@ -204,9 +197,27 @@ http {
   ## FastCGI.
   include /etc/nginx/fastcgi.conf;
 
-  ## Include the upstream servers for PHP FastCGI handling config.
-  ## This one uses the FCGI process listening on TCP sockets.
-  #include upstream_phpcgi_tcp.conf;
+  <% if @php_backend == 'hhvm' %>
+    <% if @php_backend_type == 'tcp' %>
+      ## Include the upstream servers for PHP FastCGI handling config.
+      ## This one uses the FCGI process listening on TCP sockets.
+      include upstream_hhvm_phpcgi_tcp.conf;
+    <% elsif @php_backend_type == 'unix' %>
+      ## Include the upstream servers for PHP FastCGI handling configuration.
+      ## This setup uses UNIX sockets for talking with the upstream.
+      include upstream_hhvm_phpcgi_unix.conf;
+    <% end %>
+  <% elsif @php_backend == 'php-fpm' %>
+    <% if @php_backend_type == 'tcp' %>
+      ## Include the upstream servers for PHP FastCGI handling config.
+      ## This one uses the FCGI process listening on TCP sockets.
+      include upstream_phpcgi_tcp.conf;
+    <% elsif @php_backend_type == 'unix' %>
+      ## Include the upstream servers for PHP FastCGI handling configuration.
+      ## This setup uses UNIX sockets for talking with the upstream.
+      include upstream_phpcgi_unix.conf;
+    <% end %>
+  <% end %>
 
   <% if @varnish_host or @varnish_port %>
       include upstream_varnish.conf;
@@ -229,7 +240,6 @@ http {
       http '';
       https on;
   }
-
 
   ## Include the upstream servers for Apache handling the PHP
   ## processes. In this case Nginx functions as a reverse proxy.
@@ -274,10 +284,4 @@ http {
 
   ## Include all vhosts.
   include /etc/nginx/sites-enabled/*;
-
-  # FastCGI Cache
-  # TODO: NOT Referenced anywhere, check if any content of this file need to be
-  # added into the fastcgi.conf file.
-  # include fastcgi_cache.conf;
-
 }

@@ -1,10 +1,17 @@
+# -*- mode: nginx; mode: flyspell-prog;  ispell-current-dictionary: american -*-
+
 # Redirect all http (80) to https (443) (www and non-www)
+# And remove the (www) during the redirect
 server {
   listen       80;
   # listen       [::]:80 ipv6only=on;
   server_name  <%= @server_name %> www.<%= @server_name %>;
 
-  include      polignu_settings/letsencrypt-challange.conf;
+  # Allow "Well-Known URIs" as per RFC 5785.
+  # Necessary for Let’s Encrypt validation server.
+  location ~* ^/.well-known/ {
+      allow all;
+  }
 
   return       301 https://$server_name:<%= @ssl_public_port %>$request_uri;
 }
@@ -12,17 +19,31 @@ server {
 # Redirect www https traffic to non-www https traffic
 server {
   listen      <%= @ssl_public_port %> ssl http2;
-  # listen      [::]:<%= @ssl_public_port %> ipv6only=on;
+  # listen      [::]:<%= @ssl_public_port %> ssl http2 ipv6only=on;
   server_name ~^(www\.)(?<domain><%= @server_name %>)$;
 
-  # TODO
-  ssl_certificate     /etc/nginx/ssl/nginx.crt;  # Change to letsencrypt cert
-  ssl_certificate_key /etc/nginx/ssl/nginx.key;  # Change to letsencrypt cert
+  <% if @ssl_certificate %>
+    ssl_certificate     <%= @ssl_certificate %>;
+  <% else %>
+    ssl_certificate     /etc/nginx/ssl/nginx.crt;
+  <% end %>
+  <% if @ssl_certificate_key %>
+    ssl_certificate_key     <%= @ssl_certificate_key %>;
+  <% else %>
+    ssl_certificate_key     /etc/nginx/ssl/nginx.key;
+  <% end %>
+  <% if @ssl_trusted_certificate %>
+    ssl_certificate_key     <%= @ssl_trusted_certificate %>;
+  <% end %>
 
-  # Including some SSL configs
-  include polignu_settings/ssl-setup.conf;
+  ## Keep alive timeout set to a greater value for SSL/TLS.
+  keepalive_timeout 75 75;
 
-  include     polignu_settings/letsencrypt-challange.conf;
+  # Allow "Well-Known URIs" as per RFC 5785.
+  # Necessary for Let’s Encrypt validation server.
+  location ~* ^/.well-known/ {
+      allow all;
+  }
 
   return      301 https://$domain:<%= @ssl_public_port %>$request_uri;
 }
@@ -30,34 +51,76 @@ server {
 # Do the https magic and proxy the request to varnish on port 6081
 server {
   listen <%= @ssl_public_port %> ssl http2;
-  # listen [::]:<%= @ssl_public_port %> ipv6only=on;
+  # listen [::]:<%= @ssl_public_port %> ssl http2 ipv6only=on;
   server_name <%= @server_name %>;
 
-  # TODO
-  ssl_certificate     /etc/nginx/ssl/nginx.crt;  # Change to letsencrypt cert
-  ssl_certificate_key /etc/nginx/ssl/nginx.key;  # Change to letsencrypt cert
+  <% if @ssl_certificate %>
+    ssl_certificate     <%= @ssl_certificate %>;
+  <% else %>
+    ssl_certificate     /etc/nginx/ssl/nginx.crt;
+  <% end %>
+  <% if @ssl_certificate_key %>
+    ssl_certificate_key     <%= @ssl_certificate_key %>;
+  <% else %>
+    ssl_certificate_key     /etc/nginx/ssl/nginx.key;
+  <% end %>
+  <% if @ssl_trusted_certificate %>
+    ssl_trusted_certificate     <%= @ssl_trusted_certificate %>;
+  <% end %>
 
-  # Including some SSL configs
-  include polignu_settings/ssl-setup.conf;
+  limit_conn arbeit 32;
+
+  ## Keep alive timeout set to a greater value for SSL/TLS.
+  keepalive_timeout 75 75;
 
   # Defining personal log files
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
 
-  include polignu_settings/letsencrypt-challange.conf;
+  ## Strict Transport Security header for enhanced security. See
+  ## http://www.chromium.org/sts. I've set it to 2 hours; set it to
+  ## whichever age you want. However, we can't set this here because adding
+  ## a header will drop all other headers set earlier. See
+  ## http://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header
+  ## for details.  Instead, uncomment this in nginx.conf.
+  ## add_header Strict-Transport-Security "max-age=7200";
+
+  root <%= @root_folder %>;
+
+  ## If you're using a Nginx version greater or equal to 1.1.4 then
+  ## you can use keep alive connections to the upstream be it
+  ## FastCGI or Apache. If that's not the case comment out the line below.
+  fastcgi_keep_conn on; # keep alive to the FCGI upstream
+
+  ## Uncomment if you're proxying to Apache for handling PHP.
+  #proxy_http_version 1.1; # keep alive to the Apache upstream
+
+  ## See the blacklist.conf file at the parent dir: /etc/nginx.
+  ## Deny access based on the User-Agent header.
+  if ($bad_bot) {
+      return 444;
+  }
+  ## Deny access based on the Referer header.
+  if ($bad_referer) {
+      return 444;
+  }
+
+  ## Protection against illegal HTTP methods. Out of the box only HEAD,
+  ## GET and POST are allowed.
+  if ($not_allowed_method) {
+      return 405;
+  }
+
+  # Allow "Well-Known URIs" as per RFC 5785.
+  # Necessary for Let’s Encrypt validation server.
+  location ~* ^/.well-known/ {
+      allow all;
+  }
 
   # Pass the request to varnish
   location / {
-    # running varnish on port 6081
-    proxy_pass       http://127.0.0.1:6081;
-    # Passing some headers to downstream server, so it can identify the host
-    include proxy_params;
-    proxy_set_header X-Real-IP  $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Forwarded-Port 443;
-    proxy_set_header Host $host;
-    proxy_redirect   off;
+    # running varnish on host:port (default to 127.0.0.1:6081)
+    proxy_pass       varnish;
   }
 }
 
@@ -65,72 +128,122 @@ server {
 # This will be accessed by Varnish if no cache is found.
 server {
   # Only listen to localhost requests (from varnish)
-  listen      127.0.0.1:8080;
+  listen      127.0.0.1:<%= @php_backend_port %>;
   server_name <%= @server_name %>;
 
-  include     polignu_settings/letsencrypt-challange.conf;
+  # TODO: Do we need ssl/https/tls setup on this 'backend'?
 
-  root <%= @root_folder %>;
-
+  # Defining personal log files
   access_log /var/log/nginx/<%= @server_name %>.access.log;
   error_log  /var/log/nginx/<%= @server_name %>.error.log;
 
-  # In some cases a favicon does not exist but this is not something you
-  # normally need to worry about. It's also a microscopic image and will
-  # just clutter the logs.
-  location = /favicon.ico {
-    log_not_found off;
-    access_log off;
+  root <%= @root_folder %>;
+
+  ## If you're using a Nginx version greater or equal to 1.1.4 then
+  ## you can use keep alive connections to the upstream be it
+  ## FastCGI or Apache. If that's not the case comment out the line below.
+  fastcgi_keep_conn on; # keep alive to the FCGI upstream
+
+  ## Uncomment if you're proxying to Apache for handling PHP.
+  #proxy_http_version 1.1; # keep alive to the Apache upstream
+
+  ## See the blacklist.conf file at the parent dir: /etc/nginx.
+  ## Deny access based on the User-Agent header.
+  if ($bad_bot) {
+      return 444;
+  }
+  ## Deny access based on the Referer header.
+  if ($bad_referer) {
+      return 444;
   }
 
-  # This is for the robots.txt file used by search engines.
-  location = /robots.txt {
-    # If you have one, you want to allow them access to it.
-    allow all;
-    # If you don't have one, you don't want to fill your logs with
-    # not found errors.
-    log_not_found off;
-    access_log off;
+  ## Protection against illegal HTTP methods. Out of the box only HEAD,
+  ## GET and POST are allowed.
+  if ($not_allowed_method) {
+      return 405;
   }
 
-  # This matters if you use drush because drush copies backups of modules
-  # to this directory. In the event personal information wound up in the
-  # module, you want to know outside users can't access it.
-  location = /backup {
-    deny all;
+  # Allow "Well-Known URIs" as per RFC 5785.
+  # Necessary for Let’s Encrypt validation server.
+  location ~* ^/.well-known/ {
+      allow all;
   }
 
-  # Very rarely should these ever be accessed outside of your lan
-  # The above location for robots.txt is an exact match and will override
-  # this location block.
-  location ~* \.(txt|log)$ {
-    allow 192.168.0.0/16;
-    deny all;
-  }
+  ################################################################
+  ### Generic configuration: for most Drupal 7 sites.
+  ################################################################
+  include apps/drupal/drupal.conf;
 
-  # This location block protects against a known attack. It happens if
-  # the attacker uploads a non-php file and attempts to run it as a
-  # php file on the server.
-  location ~ \..*/.*\.php$ {
-    return 403;
-  }
+  ################################################################
+  ### Configuration for Drupal 7 sites to serve URIs that need
+  ### to be **escaped**
+  ################################################################
+  #include apps/drupal/drupal_escaped.conf;
 
+  #################################################################
+  ### Configuration for Drupal 7 sites that use boost.
+  #################################################################
+  #include apps/drupal/drupal_boost.conf;
+
+  #################################################################
+  ### Configuration for Drupal 7 sites that use boost if having
+  ### to serve URIs that need to be **escaped**
+  #################################################################
+  #include apps/drupal/drupal_boost_escaped.conf;
+
+  #################################################################
+  ### Configuration for updating the site via update.php and running
+  ### cron externally. If you don't use drush for running cron use
+  ### the configuration below.
+  #################################################################
+  #include apps/drupal/drupal_cron_update.conf;
+
+  ################################################################
+  ### Installation handling. This should be commented out after
+  ### installation if on an already installed site there's no need
+  ### to touch it. If on a yet to be installed site. Uncomment the
+  ### line below and comment out after installation. Note that
+  ### there's a basic auth in front as secondary ligne of defense.
+  ################################################################
+  include apps/drupal/drupal_install.conf;
+
+  #################################################################
+  ### Support for upload progress bar. Configurations differ for
+  ### Drupal 6 and Drupal 7.
+  #################################################################
+  include apps/drupal/drupal_upload_progress.conf;
+
+  ## Including the php-fpm status and ping pages config.
+  ## Uncomment to enable if you're running php-fpm.
+  #include php_fpm_status_vhost.conf;
+
+  ## Including the Nginx stub status page for having stats about
+  ## Nginx activity: http://wiki.nginx.org/HttpStubStatusModule.
+  #include nginx_status_vhost.conf;
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
   # This is our primary location block. The try_files directive will
   # attempt to serve the data in the order listed. First try the exact
   # request (such as an image or text file). If it doesn't exist, see if
   # the directory exists. If not, then we move to the rewrite which is
   # used for the front-end controller pattern.
-  location / {
-    try_files $uri $uri/ @rewrite;
-  }
+  #location / {
+  #  try_files $uri $uri/ @rewrite;
+  #}
 
   # This will rewrite our request from domain.com/node/1/ to domain.com/index.php?q=node/1
   # This could be done in try_files without a rewrite however, the GlobalRedirect
   # module enforces no slash (/) at the end of URL's. This rewrite removes that
   # so no infinite redirect loop is reached.
-  location @rewrite {
-    rewrite ^/(.*)$ /index.php?q=$1;
-  }
+  #location @rewrite {
+  #  rewrite ^/(.*)$ /index.php?q=$1;
+  #}
 
-  include polignu_settings/hhvm.conf;
+  # include polignu_settings/hhvm.conf;
 }

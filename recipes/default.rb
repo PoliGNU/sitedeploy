@@ -202,14 +202,6 @@ template "/etc/systemd/system/varnish.service" do
   source 'varnish/varnish.service.erb'
 end
 
-# letsencrypt (certbot) setup
-template "#{confs_nginx_settings}/letsencrypt-challange.conf" do
-  mode '644'
-  owner user
-  group user
-  source 'nginx/polignu_settings/letsencrypt-challange.conf.erb'
-end
-
 # Generationg dhparam file (see nginx.ssl_setup.conf.erb for more info)
 execute 'generate dhparam' do
   command "openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048"
@@ -217,7 +209,7 @@ execute 'generate dhparam' do
 end
 
 # nginx setup
-# For tests purpose
+# This index is for test purposes
 cookbook_file "#{www_folder}/index.html" do
   mode '644'
   source 'test.html'
@@ -233,6 +225,64 @@ cookbook_file "#{ssl_folder}/nginx.key" do
   source 'nginx.key'
 end
 
+cookbook_file "#{main_nginx}/mime.types" do
+  mode '644'
+  source 'nginx/mime.types'
+end
+
+cookbook_file "#{main_nginx}/fastcgi.conf" do
+  mode '644'
+  source 'nginx/fastcgi.conf'
+end
+
+cookbook_file "#{main_nginx}/fastcgi_params" do
+  mode '644'
+  source 'nginx/fastcgi_params'
+end
+
+cookbook_file "#{main_nginx}/map_block_http_methods.conf" do
+  mode '644'
+  source 'nginx/map_block_http_methods.conf'
+end
+
+cookbook_file "#{main_nginx}/reverse_proxy.conf" do
+  mode '644'
+  source 'nginx/reverse_proxy.conf'
+end
+
+cookbook_file "#{main_nginx}/nginx_status_allowed_hosts.conf" do
+  mode '644'
+  source 'nginx/nginx_status_allowed_hosts.conf'
+end
+
+cookbook_file "#{main_nginx}/blacklist.conf" do
+  mode '644'
+  source 'nginx/blacklist.conf'
+end
+
+cookbook_file "#{main_nginx}/apps/drupal/map_cache.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/map_cache.conf'
+end
+
+cookbook_file "#{main_nginx}/fastcgi_microcache_zone.conf" do
+  mode '644'
+  source 'nginx/fastcgi_microcache_zone.conf'
+end
+
+cookbook_file "#{main_nginx_available}/000-default" do
+  mode '644'
+  source 'nginx/sites-available/000-default'
+end
+
+link "#{main_nginx_enabled}/000-default" do
+  to "#{main_nginx_available}/000-default"
+end
+
+file '/etc/nginx/sites-enabled/default' do
+  action :delete
+end
+
 template "#{confs_nginx}/nginx.conf" do
   mode '644'
   owner user
@@ -240,7 +290,12 @@ template "#{confs_nginx}/nginx.conf" do
   source 'nginx/nginx.conf.erb'
   variables(
      user: user,
-     real_ip_from: node['nginx']['real_ip_from']
+     nginx_pid_file: node['nginx']['pid_file'],
+     worker_rlimit_nofile: node['nginx']['worker_rlimit_nofile'],
+     worker_connections: node['worker_connections'],
+     real_ip_from: node['nginx']['real_ip_from'],
+     php_backend: node['nginx']['php_backend'],
+     php_backend_type: node['nginx']['php_backend_type']
   )
 end
 
@@ -248,56 +303,32 @@ link "#{main_nginx}/nginx.conf" do
   to "#{confs_nginx}/nginx.conf"
 end
 
-template "#{confs_nginx}/fastcgi_cache.conf" do
+template "#{confs_nginx}/upstream_hhvm_phpcgi_tcp.conf" do
   mode '644'
   owner user
   group user
-  source 'nginx/fastcgi_cache.conf.erb'
+  source 'nginx/upstream_hhvm_phpcgi_tcp.conf.erb'
   variables(
-    server_name: node['polignu']['server_name']
+     hhvm_socket_file: node['hhvm']['server']['socket_file']
   )
 end
 
-link "#{main_nginx}/fastcgi_cache.conf" do
-  to "#{confs_nginx}/fastcgi_cache.conf"
+link "#{main_nginx}/upstream_hhvm_phpcgi_tcp.conf" do
+  to "#{confs_nginx}/upstream_hhvm_phpcgi_tcp.conf"
 end
 
-# # TODO: Can cache be global? [be inserted in html block]
-# template "#{confs_nginx_settings}/cache.conf" do
-#   mode '644'
-#   owner user
-#   group user
-#   source 'nginx/polignu_settings/cache.conf.erb'
-# end
-# 
-# # TODO: Can status be global? [be inserted in html block]
-# template "#{confs_nginx_settings}/status.conf" do
-#   mode '644'
-#   owner user
-#   group user
-#   source 'nginx/polignu_settings/status.conf.erb'
-# end
-
-# TODO: Can security be settings? [be inserted in html block]
-template "#{confs_nginx_settings}/security.conf" do
+template "#{confs_nginx}/hhvm.conf" do
   mode '644'
   owner user
   group user
-  source 'nginx/polignu_settings/security.conf.erb'
+  source 'nginx/polignu_settings/hhvm.conf.erb'
+  variables(
+     hhvm_socket_file: node['hhvm']['server']['socket_file']
+  )
 end
 
-template "#{confs_nginx_settings}/ssl-setup.conf" do
-  mode '644'
-  owner user
-  group user
-  source 'nginx/polignu_settings/ssl-setup.conf.erb'
-end
-
-template "#{confs_nginx_settings}/hhvm.conf" do
-  mode '644'
-  owner user
-  group user
-    source 'nginx/polignu_settings/hhvm.conf.erb'
+link "#{main_nginx}/hhvm.conf" do
+  to "#{confs_nginx}/hhvm.conf"
 end
 
 # Verify nginx config until this point
@@ -306,10 +337,6 @@ file "#{main_nginx}/nginx.conf" do
 end
 
 # nginx setting up specific sites
-file '/etc/nginx/sites-enabled/default' do
-  action :delete
-end
-
 if node['polignu']
   template "#{confs_nginx_available}/polignu.conf" do
     mode '644'
@@ -317,9 +344,15 @@ if node['polignu']
     group user
     source 'nginx/sites-available/example.conf.erb'
     variables(
-      server_name: node['polignu']['server_name'], # TODO
-      ssl_public_port: node['polignu']['ssl_public_port'],
-      root_folder: polignu_www # TODO
+      server_name: node['polignu']['server_name'],
+      ssl_public_port: node['polignu']['ssl']['public_port'],
+      ssl_certificate: node['polignu']['ssl']['certificate'],
+      ssl_certificate_key: node['polignu']['ssl']['certificate_key'],
+      ssl_trusted_certificate: node['polignu']['ssl']['trusted_certificate'],
+      root_folder: polignu_www,
+      varnish_host: node["varnish"]["host"],
+      varnish_port: node["varnish"]["port"],
+      php_backend_port: node["nginx"]["php_backend_port"]
     )
   end
 
@@ -339,9 +372,15 @@ if node['poligen']
     group user
     source 'nginx/sites-available/example.conf.erb'
     variables(
-      server_name: node['polignu']['server_name'], # TODO
-      ssl_public_port: node['polignu']['ssl_public_port'],
-      root_folder: polignu_www # TODO
+      server_name: node['poligen']['server_name'],
+      ssl_public_port: node['poligen']['ssl']['public_port'],
+      ssl_certificate: node['poligen']['ssl']['certificate'],
+      ssl_certificate_key: node['poligen']['ssl']['certificate_key'],
+      ssl_trusted_certificate: node['poligen']['ssl']['trusted_certificate'],
+      root_folder: poligen_www,
+      varnish_host: node["varnish"]["host"],
+      varnish_port: node["varnish"]["port"],
+      php_backend_port: node["nginx"]["php_backend_port"]
     )
   end
 
@@ -352,10 +391,6 @@ if node['poligen']
   link "#{main_nginx_enabled}/poligen.conf" do
     to "#{main_nginx_available}/poligen.conf"
   end
-end
-
-file '/etc/nginx/nginx.conf' do
-    verify 'nginx -t'
 end
 
 ########################
