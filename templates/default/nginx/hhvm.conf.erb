@@ -1,7 +1,4 @@
 # /etc/nginx/polignu_settings/hhvm.conf
-# Based on:
-# - https://github.com/VisiStruct/LEMH-Server/blob/master/nginx/hhvm.conf
-# - https://gist.github.com/colin-kiegel/591840fcbce9d5eb7c78
 
 #fastcgi_cache start
 set $no_cache 0;
@@ -22,9 +19,7 @@ if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_no
 }
 
 location ~ \.(hh|php)$ {
-  fastcgi_keep_conn on;
-  # fastcgi_pass      127.0.0.1:9000;
-  fastcgi_pass      unix:/var/run/hhvm/hhvm.sock;
+  fastcgi_pass      unix:<%= @hhvm_socket_file %>;
   fastcgi_index     index.php;
   include           fastcgi.conf;
   fastcgi_cache_valid 200 302 2h;
