@@ -1,0 +1,30 @@
+# NGINX
+Nginx configuration references
+## General configs
+- https://github.com/perusio/drupal-with-nginx/blob/D7/nginx.conf
+- https://github.com/nicolargo/varnish-nginx-wordpress/blob/master/nginx/nginx.conf
+- https://github.com/VisiStruct/LEMH-Server/blob/master/nginx/nginx.conf
+
+## Secure (https/HSTS/SSL) setup
+
+### Main reference for NGINX secure setup
+- https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
+  - https://raymii.org/s/tutorials/OCSP_Stapling_on_nginx.html
+  - https://raymii.org/s/tutorials/HTTP_Strict_Transport_Security_for_Apache_NGINX_and_Lighttpd.html
+  - https://raymii.org/s/articles/HTTP_Public_Key_Pinning_Extension_HPKP.html
+
+## Other references
+- https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04
+- https://gist.github.com/konklone/6532544 (take a look at the discussion)
+- http://vincent.bernat.im/en/blog/2011-ssl-session-reuse-rfc5077.html
+- http://blog.ivanristic.com/2013/09/is-beast-still-a-threat.html
+- http://blog.mozilla.org/security/2013/07/29/ocsp-stapling-in-firefox/
+- https://en.wikipedia.org/wiki/SSL_stripping#SSL_stripping
+- https://developer.mozilla.org/en-US/docs/Security/HTTP_Strict_Transport_Security
+- https://www.nginx.com/blog/http-strict-transport-security-hsts-and-nginx/
+- http://www.westphahl.net/blog/2012/01/03/setting-up-https-with-nginx-and-startssl/
+- https://sslmate.com/blog/post/ocsp_stapling_in_apache_and_nginx
+
+# HHVM
+- https://github.com/VisiStruct/LEMH-Server/blob/master/nginx/hhvm.conf
+- https://gist.github.com/colin-kiegel/591840fcbce9d5eb7c78
