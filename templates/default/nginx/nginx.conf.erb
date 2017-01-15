@@ -130,7 +130,7 @@ http {
   # ssl_protocols TLSv1.2;  # latest TLS, drops IE8-IE10 and Android 4.3.
 
   ## Pregenerated Diffie-Hellman parameters.
-  ssl_dhparam /etc/nginx/dh_param.pem;
+  ssl_dhparam /etc/ssl/certs/dhparam.pem;
 
   ## Curve to use for ECDH.
   ssl_ecdh_curve secp521r1;
@@ -164,7 +164,7 @@ http {
 
   ## For the filefield_nginx_progress module to work. From the
   ## README. Reserve 1MB under the name 'uploads' to track uploads.
-  upload_progress uploads 1m;
+  # upload_progress uploads 1m;
 
   ## Enable the builtin cross-site scripting (XSS) filter available
   ## in modern browsers.  Usually enabled by default we just

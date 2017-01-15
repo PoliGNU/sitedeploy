@@ -20,7 +20,7 @@ confs_nginx = "#{configs}/nginx"
 confs_nginx_settings = "#{confs_nginx}/polignu_settings"
 confs_nginx_available = "#{confs_nginx}/sites-available"
 main_nginx = "/etc/nginx"
-main_nginx_settings = "#{main_nginx}/polignu_settings"
+main_nginx_drupal = "#{main_nginx}/apps/drupal"
 main_nginx_available = "#{main_nginx}/sites-available"
 main_nginx_enabled = "#{main_nginx}/sites-enabled"
 confs_hhvm = "#{configs}/hhvm"
@@ -112,8 +112,12 @@ directory confs_nginx_settings do
   action :create
 end
 
-link main_nginx_settings do
-  to confs_nginx_settings
+directory main_nginx_drupal do
+  owner user
+  group user
+  mode '755'
+  recursive true
+  action :create
 end
 
 directory confs_nginx_available do
@@ -133,6 +137,14 @@ directory confs_hhvm do
 end
 
 directory confs_varnish do
+  owner user
+  group user
+  mode '755'
+  recursive true
+  action :create
+end
+
+directory '/var/cache/nginx/microcache' do
   owner user
   group user
   mode '755'
@@ -260,14 +272,94 @@ cookbook_file "#{main_nginx}/blacklist.conf" do
   source 'nginx/blacklist.conf'
 end
 
-cookbook_file "#{main_nginx}/apps/drupal/map_cache.conf" do
+cookbook_file "#{main_nginx}/fastcgi_microcache_zone.conf" do
+  mode '644'
+  source 'nginx/fastcgi_microcache_zone.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/admin_basic_auth.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/admin_basic_auth.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/cron_allowed_hosts.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/cron_allowed_hosts.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/drupal_boost.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/drupal_boost.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/drupal_boost_escaped.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/drupal_boost_escaped.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/drupal.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/drupal.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/drupal_cron_update.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/drupal_cron_update.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/drupal_escaped.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/drupal_escaped.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/drupal_install.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/drupal_install.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/drupal_upload_progress.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/drupal_upload_progress.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/fastcgi_drupal.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/fastcgi_drupal.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/fastcgi_no_args_drupal.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/fastcgi_no_args_drupal.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/hotlinking_protection.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/hotlinking_protection.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/map_cache.conf" do
   mode '644'
   source 'nginx/apps/drupal/map_cache.conf'
 end
 
-cookbook_file "#{main_nginx}/fastcgi_microcache_zone.conf" do
+cookbook_file "#{main_nginx_drupal}/microcache_fcgi_auth.conf" do
   mode '644'
-  source 'nginx/fastcgi_microcache_zone.conf'
+  source 'nginx/apps/drupal/microcache_fcgi_auth.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/microcache_fcgi.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/microcache_fcgi.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/microcache_proxy_auth.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/microcache_proxy_auth.conf'
+end
+
+cookbook_file "#{main_nginx_drupal}/microcache_proxy.conf" do
+  mode '644'
+  source 'nginx/apps/drupal/microcache_proxy.conf'
 end
 
 cookbook_file "#{main_nginx_available}/000-default" do
@@ -292,7 +384,7 @@ template "#{confs_nginx}/nginx.conf" do
      user: user,
      nginx_pid_file: node['nginx']['pid_file'],
      worker_rlimit_nofile: node['nginx']['worker_rlimit_nofile'],
-     worker_connections: node['worker_connections'],
+     worker_connections: node['nginx']['worker_connections'],
      real_ip_from: node['nginx']['real_ip_from'],
      php_backend: node['nginx']['php_backend'],
      php_backend_type: node['nginx']['php_backend_type']
@@ -303,25 +395,25 @@ link "#{main_nginx}/nginx.conf" do
   to "#{confs_nginx}/nginx.conf"
 end
 
-template "#{confs_nginx}/upstream_hhvm_phpcgi_tcp.conf" do
+template "#{confs_nginx}/upstream_hhvm_phpcgi_unix.conf" do
   mode '644'
   owner user
   group user
-  source 'nginx/upstream_hhvm_phpcgi_tcp.conf.erb'
+  source 'nginx/upstream_hhvm_phpcgi_unix.conf.erb'
   variables(
      hhvm_socket_file: node['hhvm']['server']['socket_file']
   )
 end
 
-link "#{main_nginx}/upstream_hhvm_phpcgi_tcp.conf" do
-  to "#{confs_nginx}/upstream_hhvm_phpcgi_tcp.conf"
+link "#{main_nginx}/upstream_hhvm_phpcgi_unix.conf" do
+  to "#{confs_nginx}/upstream_hhvm_phpcgi_unix.conf"
 end
 
 template "#{confs_nginx}/hhvm.conf" do
   mode '644'
   owner user
   group user
-  source 'nginx/polignu_settings/hhvm.conf.erb'
+  source 'nginx/hhvm.conf.erb'
   variables(
      hhvm_socket_file: node['hhvm']['server']['socket_file']
   )

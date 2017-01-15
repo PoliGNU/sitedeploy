@@ -120,7 +120,20 @@ server {
   # Pass the request to varnish
   location / {
     # running varnish on host:port (default to 127.0.0.1:6081)
-    proxy_pass       varnish;
+    # proxy_pass       varnish;
+
+    proxy_pass       http://<%= @varnish_host %>:<%= @varnish_port %>;
+    proxy_set_header X-Real-IP  $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Port <%= @ssl_public_port %>;
+    proxy_set_header Host $host;
+    proxy_redirect   off;
+    ## Create a backend connection cache. Note that this requires
+    ## Nginx version greater or equal to 1.1.4.
+    ## Cf. http://nginx.org/en/CHANGES. Comment out the following
+    ## line if that's not the case.
+    
   }
 }
 
@@ -211,7 +224,7 @@ server {
   ### Support for upload progress bar. Configurations differ for
   ### Drupal 6 and Drupal 7.
   #################################################################
-  include apps/drupal/drupal_upload_progress.conf;
+  # include apps/drupal/drupal_upload_progress.conf;
 
   ## Including the php-fpm status and ping pages config.
   ## Uncomment to enable if you're running php-fpm.
