@@ -1,0 +1,28 @@
+# -*- mode: nginx; mode: flyspell-prog;  ispell-local-dictionary: "american" -*-
+
+### Upstream configuration for Varnish functioning has a cache.
+
+## Add as many servers as needed.
+## Cf. http://wiki.nginx.org/HttpUpstreamModule.
+## Note that this configuration assumes by default that keepalive
+## upstream connections are supported and that you have a Nginx
+## version with the fair load balancer.
+
+upstream phpapache {
+    ## Use the least connection algorithm for load balancing. This
+    ## algorithm was introduced in versions 1.3.1 and 1.2.2.
+    least_conn;
+
+    proxy_pass <%= @varnish_host %>:<%= @varnish_port %>;
+    proxy_set_header X-Real-IP  $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Port <%= @ssl_public_port %>;
+    proxy_set_header Host $host;
+    proxy_redirect   off;
+    ## Create a backend connection cache. Note that this requires
+    ## Nginx version greater or equal to 1.1.4.
+    ## Cf. http://nginx.org/en/CHANGES. Comment out the following
+    ## line if that's not the case.
+    keepalive 5;
+}
