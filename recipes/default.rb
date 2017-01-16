@@ -63,6 +63,9 @@ package "letsencrypt"
 # Install nginx
 package 'nginx'
 
+# Install drush (drupal command line utility)
+package "drush"
+
 ###########################################
 # Create directories to hold config files #
 ###########################################
@@ -512,4 +515,3 @@ end
 
 ###############################
 # Setup Drupal (polignu/poligen)
-
