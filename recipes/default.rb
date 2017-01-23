@@ -160,6 +160,16 @@ end
 #############################
 
 # HHVM SETUP
+template "etc/default/hhvm" do
+  mode '644'
+  owner "root"
+  group "root"
+  source 'hhvm/default.hhvm.erb'
+  variables(
+    user: user
+  )
+end
+
 template "#{confs_hhvm}/php.ini" do
   mode '644'
   owner "root"
