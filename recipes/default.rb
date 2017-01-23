@@ -85,6 +85,14 @@ directory www_folder do
   action :create
 end
 
+directory polignu_www do
+  owner user
+  group user
+  mode '755'
+  recursive true
+  action :create
+end
+
 directory ssl_folder do
   mode '755'
   recursive true
