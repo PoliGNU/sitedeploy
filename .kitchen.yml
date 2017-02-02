@@ -17,6 +17,7 @@ suites:
     run_list:
       - recipe[polignu::default]
     attributes: {
+        environment : "local",
         linux_user : "vagrant",
         server_name : "localhost",
         ssl_public_port : "443"
