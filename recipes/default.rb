@@ -57,9 +57,6 @@ package 'mariadb-server'
 # Install Varnish
 package 'varnish'
 
-# Install letsencrypt client
-package "letsencrypt"
-
 # Install nginx
 package 'nginx'
 
@@ -248,15 +245,16 @@ cookbook_file "#{www_folder}/index.html" do
   source 'test.html'
 end
 
-cookbook_file "#{ssl_folder}/nginx.crt" do
-  mode '644'
-  source 'nginx.crt'
+# TODO let's encrypt
+include_recipe 'acme'
+
+# TODO we need to pass more info about the certificate to let's encrypt using chef attributed
+# TODO change localhost for default["std"]["server_name"]
+acme_selfsigned "localhost" do
+  crt     "#{ssl_folder}/nginx.crt"
+  key     "#{ssl_folder}/nginx.key"
 end
 
-cookbook_file "#{ssl_folder}/nginx.key" do
-  mode '644'
-  source 'nginx.key'
-end
 
 cookbook_file "#{main_nginx}/mime.types" do
   mode '644'

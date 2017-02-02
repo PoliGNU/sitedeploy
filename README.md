@@ -131,6 +131,9 @@ install our ruby-based dependencies:
 ```shell
 $ bundle install
 ```
+## Downloading cookbooks upon which we depend
+
+`berks install`
 
 ## Understanding testing with kitchen
 
