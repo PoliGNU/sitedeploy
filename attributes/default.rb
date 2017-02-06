@@ -61,3 +61,9 @@ default["polignu"]["ssl"]["public_port"] = 443
 default["polignu"]["ssl"]["certificate"] = nil  # /etc/letsencrypt/live/polignu.org/fullchain.pem
 default["polignu"]["ssl"]["certificate_key"] = nil  # /etc/letsencrypt/live/polignu.org/privkey.pem
 default["polignu"]["ssl"]["trusted_certificate"] = nil  # /etc/letsencrypt/live/polignu.org/fullchain.pem
+
+# Let's Encrypt
+default['acme']['contact'] = 'poli@gnu.org'
+if node.default['environment'] == 'stage'
+    default['acme']['endpoint'] = 'https://acme-staging.api.letsencrypt.org/directory'
+end	

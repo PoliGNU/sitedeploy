@@ -240,7 +240,7 @@ end
 
 # nginx setup
 # This index is for test purposes
-cookbook_file "#{www_folder}/index.html" do
+cookbook_file "]index.html" do
   mode '644'
   source 'test.html'
 end
@@ -255,13 +255,17 @@ cookbook_file "#{ssl_folder}/nginx.key" do
   source 'nginx.key'
 end
 
-
-
-# TODO let's encrypt
 include_recipe 'acme'
 
-
-
+acme_certificate node["std"]["server_name"] do
+# alt_names ['web.example.com', 'mail.example.com']
+  fullchain "#{ssl_folder}/nginx.crt"
+  chain     "#{ssl_folder}/nginx.crt"
+  key       "#{ssl_folder}/nginx.key"
+  method    'http'
+  wwwroot   www_folder
+  only_if   { node.default['environment'] != 'local' }
+end
 
 cookbook_file "#{main_nginx}/mime.types" do
   mode '644'
