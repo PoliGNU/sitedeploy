@@ -133,7 +133,10 @@ $ bundle install
 ```
 ## Downloading cookbooks upon which we depend
 
-`berks install`
+```
+$ cd cookbooks/sitedeploy
+$ berks install
+```
 
 ## Understanding testing with kitchen
 
