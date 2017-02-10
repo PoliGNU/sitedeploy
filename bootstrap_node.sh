@@ -10,6 +10,6 @@ rbenv install 2.3.3
 rbenv global 2.3.3
 gem install bundler
 gem install berkshelf
-cd cookbooks/sitedeploy; berks install 
+cd cookbooks/polignu; berks install 
 mv ~/.berkshelf/cookbooks/acme-2.0.0/ ~/.berkshelf/cookbooks/acme # this line is a hack for now... TODO improve it
 curl -LO https://omnitruck.chef.io/install.sh && sudo bash ./install.sh -v 12.17 && rm install.sh
