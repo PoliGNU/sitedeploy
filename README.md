@@ -37,7 +37,7 @@ $ cd ..; rm -rf bats
 
 ### Ruby setup
 
-See "[Installing Ruby on developer workstation](https://github.com/PoliGNU/sitedeploy/blob/master/doc/ruby.md)".
+See "[Ruby setup](https://github.com/PoliGNU/sitedeploy/blob/master/doc/ruby.md)".
 
 ## Downloading cookbooks upon which we depend
 

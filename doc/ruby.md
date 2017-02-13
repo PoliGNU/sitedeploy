@@ -1,5 +1,5 @@
 
-# Installing Ruby on developer workstation 
+# Ruby setup
 
 Install `rbenv`, a tool to manage the installed Ruby versions.
 
