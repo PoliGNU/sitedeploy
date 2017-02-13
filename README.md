@@ -37,7 +37,7 @@ $ cd ..; rm -rf bats
 
 ### Ruby setup
 
-See "[Installing Ruby on developer workstation](https://raw.github.com/PoliGNU/sitedeploy/master/doc/ruby.md)".
+See "[Installing Ruby on developer workstation](https://github.com/PoliGNU/sitedeploy/blob/master/doc/ruby.md)".
 
 ## Downloading cookbooks upon which we depend
 
@@ -49,6 +49,7 @@ $ berks install
 ## Understanding testing with kitchen
 
 The usage of Kitchen is encapsulated in our Rakefile. 
-But to better understand Kitchen, see "[Understanding testing with kitchen](https://raw.github.com/PoliGNU/sitedeploy/master/doc/kitchen.md)".
+
+But to better understand Kitchen, see "[Understanding testing with kitchen](https://github.com/PoliGNU/sitedeploy/blob/master/doc/kitchen.md)".
 
 
