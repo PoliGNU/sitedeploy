@@ -3,7 +3,7 @@
 
 Install `rbenv`, a tool to manage the installed Ruby versions.
 
-First install rbenv (based on https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-16-04):
+First install rbenv (based on [this](https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-16-04)):
 
 ```shell
 $ sudo apt update
