@@ -1,4 +1,5 @@
 {
+   "environment" : "staging",   
    "run_list":[
          "recipe[polignu::default]"
     ]
