@@ -64,6 +64,6 @@ default["polignu"]["ssl"]["trusted_certificate"] = nil  # /etc/letsencrypt/live/
 
 # Let's Encrypt
 default['acme']['contact'] = 'poli@gnu.org'
-if node.default['environment'] == 'stage'
+if node.default['environment'] == 'staging'
     default['acme']['endpoint'] = 'https://acme-staging.api.letsencrypt.org/directory'
 end	
