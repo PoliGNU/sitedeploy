@@ -39,11 +39,19 @@ $ cd ..; rm -rf bats
 
 See "[Ruby setup](https://github.com/PoliGNU/sitedeploy/blob/master/doc/ruby.md)".
 
-## Downloading cookbooks upon which we depend
+### Downloading cookbooks upon which we depend
 
 ```
 $ cd cookbooks/polignu
 $ berks install
+```
+
+### Setup /etc/hosts
+
+Add the following line to your `/etc/hosts`:
+
+```
+127.0.0.1  polignu.org poligen.polignu.org
 ```
 
 ## Understanding testing with kitchen
