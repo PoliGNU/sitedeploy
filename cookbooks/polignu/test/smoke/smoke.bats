@@ -4,9 +4,9 @@
 # This is runned on the vagrant HOST, not the vagrant GUEST.
 
 @test "Should access PoliGNU webpage" {
-  run bash -c "curl --insecure https://localhost:8443/ | grep '<html>'"
+  run bash -c "curl --insecure https://localhost/ | grep '<html>'"
   [ "$status" -eq 0 ]
-  run bash -c "curl --insecure https://localhost:8443/ | grep PoliGNU"
+  run bash -c "curl --insecure https://localhost/ | grep PoliGNU"
   [ "$status" -eq 0 ]
 }
 
